@@ -1,0 +1,43 @@
+
+import operator
+from __builtin__ import sorted
+
+data = dict()
+
+data["abc"] = 1
+data["tef"] = 9
+data["smth"] = 9
+
+data["org"] = 6
+
+print data
+
+dataList = sorted(data.iteritems(),key=operator.itemgetter(1,0),reverse=True)
+
+print dataList
+
+
+table = {}
+
+table["c1"] = [[1,2,3]]
+table["c2"] = [[4,5,6]]
+table["c5 c4 (%)"] = []
+
+table.get("c5 c4 (%)").append([7,8,9])
+
+c5c4data = table["c5 c4 (%)"]
+print "c5c4data = ", c5c4data
+
+print table
+
+
+a = [1,2,3,4,5,23]
+
+average = float(sum(a)) / len(a)
+print average
+
+dataItem["key1"] = 1
+table2["c1"] = [dataItem]
+
+if __name__ == '__main__':
+    pass

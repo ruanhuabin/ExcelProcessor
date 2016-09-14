@@ -1,0 +1,27 @@
+# encoding: utf-8
+'''
+Created on 2016��9��14��
+
+@author: ruanhuabin
+'''
+
+import Tkinter
+from Tkinter import Button
+from Tkconstants import *
+from tkFileDialog import askopenfilename
+from Tkinter import Tk
+
+def hello(win):
+    print "Hello world"
+    filename = askopenfilename()
+    print filename
+win = Tkinter.Tk()
+win.title("Screen Data Processor")
+win.geometry('400x200')
+
+btn = Button(win, text="select file", command = hello)
+btn.pack(side=TOP)
+
+win.mainloop()
+if __name__ == '__main__':
+    pass

@@ -1,0 +1,23 @@
+# encoding: utf-8
+'''
+Created on 2016��9��14��
+
+@author: ruanhuabin
+'''
+
+import Tkinter
+from Tkinter import Button
+from Tkconstants import CENTER
+
+def hello():
+    print "Hello world"
+win = Tkinter.Tk()
+win.title("Screen Data Processor")
+win.geometry('400x200')
+
+btn = Button(win, text="select file", command = hello)
+btn.pack(expand=YES, fill=CENTER)
+
+win.mainloop()
+if __name__ == '__main__':
+    pass

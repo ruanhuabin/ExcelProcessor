@@ -1,0 +1,15 @@
+# encoding: utf-8
+'''
+Created on 2016��9��14��
+
+@author: ruanhuabin
+'''
+
+import Tkinter
+
+def hello():
+    print "Hello world"
+top = Tkinter.Tk()
+top.mainloop()
+if __name__ == '__main__':
+    pass

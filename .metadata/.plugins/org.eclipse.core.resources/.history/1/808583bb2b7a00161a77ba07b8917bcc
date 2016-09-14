@@ -1,0 +1,10 @@
+'''
+Created on 2016Äê9ÔÂ14ÈÕ
+
+@author: ruanhuabin
+'''
+import Tkinter
+top = Tkinter.Tk()
+top.mainloop()
+if __name__ == '__main__':
+    pass
