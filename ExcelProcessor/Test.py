@@ -47,5 +47,12 @@ data = [["c5", 1], ["c3", 2], ["c4", 8]]
 
 data.sort(cmp=None, key=getKey, reverse=True)
 print data
+
+a = 3
+b = "Hello B"
+str1 = "This is a message: [%s:%d]" % (b, a)
+
+
+print str1
 if __name__ == '__main__':
     pass

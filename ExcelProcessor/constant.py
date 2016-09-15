@@ -17,4 +17,13 @@ lsTitle = "LS"
 rtRangeTitle = "RT range"
 
 
+#Title for quan data
+quanExpectRTTitle = "Expected RT"
+quanMZExpectedTitle = "m/z (Expected)"
+quanCompoundTitle = "Compound"
+quanAreaTitle = "Area"
+quanActualRTTitle = "Actual RT"
+
+
+
 NAValue = -10000L

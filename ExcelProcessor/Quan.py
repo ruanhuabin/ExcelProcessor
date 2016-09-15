@@ -10,18 +10,33 @@ import math
 from openpyxl.styles import colors
 from openpyxl.styles import Font, Color
 from openpyxl.styles import colors
-from util import checkFileValid
+from util import checkFileValid, getCurrTime
+from Tkconstants import INSERT
 
-def loadData(fileName):
-    print "start load data %s" % time.clock()
+
+def loadData(fileName, logger, text_field):
+    #print "start load data %s" % time.clock()
+    logger.info("Start to load data from file: %s" % fileName)
+    text_field.insert(INSERT, "[%s]: Start to load data from file: %s\n" %(getCurrTime(), fileName))
+    
     quanWorkBook = {}
     QuanData = load_workbook(fileName)
-    print "end load data %s" % time.clock()
+    #print "end load data %s" % time.clock()
+    logger.info("Finish loading data")
+    text_field.insert(INSERT, "[%s]: Finish loading data\n" %(getCurrTime()))
+    
     sheetNames = QuanData.get_sheet_names()
+    currentSheetIndex = 1
+    sheetNum = len(sheetNames)
     #print sheetNames
     sheetNames.sort()   
     for currentSheetName in sheetNames:
-        print "load sheet Name %s: %s" % (currentSheetName, time.clock())
+        #print "load sheet %s: %s" % (currentSheetName, time.clock())
+        logger.info("Start to load data from sheet [%d/%d]: %s" % (currentSheetIndex, sheetNum, currentSheetName))
+        
+        text_field.insert(INSERT, "[%s]: Start to load data from sheet [%d/%d]: %s\n" %(getCurrTime(), currentSheetIndex, sheetNum, currentSheetName))
+        currentSheetIndex += 1
+        text_field.see("end")
         sheetData = QuanData.get_sheet_by_name(currentSheetName)
         rows = sheetData.rows;
         columns = sheetData.columns;
@@ -62,6 +77,8 @@ def loadData(fileName):
         
         quanWorkBook[currentSheetName] = sheetDataFinal
         
+    logger.info("Finish loading all sheet's data")
+    text_field.insert(INSERT, "[%s]: Finish loading all sheet's data\n" %(getCurrTime()))
     return quanWorkBook
             
 
@@ -81,7 +98,7 @@ def extractPartData(wordBook):
         
         ws.append(sheetTitle)
         
-        print "Data in sheet: ", currentSheetName, ":\n"
+        #print "Data in sheet: ", currentSheetName, ":\n"
         allColumnData = []
         for currentTitle in sheetTitle:
             columnData = sheetData[currentTitle]
@@ -90,7 +107,7 @@ def extractPartData(wordBook):
         rowsNum = len(allColumnData[0])
         columnsNum = len(sheetTitle)
         
-        print rowsNum, columnsNum
+        #print rowsNum, columnsNum
         
         #for debug file quan.xlsx
         rowsNum = 6
@@ -108,7 +125,7 @@ def extractPartData(wordBook):
         
 
 
-def extractColumnToFile(wordBook):
+def extractColumnToFile(wordBook, outputFilename, logger):
     wb = Workbook()
     #remove default worksheet
     wb.remove_sheet(wb.get_sheet_by_name("Sheet"))
@@ -190,24 +207,28 @@ def extractColumnToFile(wordBook):
         columnIndex = columnIndex + 1
         
     
-    wb.save(filename="extract.xlsx")
+    wb.save(filename=outputFilename)
+    logger.info("Finish extracting data, the result file is: %s" % outputFilename)
+    #text_field.insert(INSERT, "[%s]: Finish loading all sheet's data\n" %(getCurrTime()))
     
     
     
-myExcelBook = loadData("quan.xlsx")
-from constant import *
-import sys
-from util import printDict
-rowTitleMust = [compoundNameTitle, mzExpectedTitle, libraryScoreTitle, measuredAreaTitle, ipTitle, lsTitle, rtMeasuredTitle, mzDeltaTitle]
-
-[missingNum, missingRowTitleDict] = checkFileValid(myExcelBook, rowTitleMust)
-if(missingNum > 0):
-    print "Error: Some worksheet missing some column(s):"
-    printDict(missingRowTitleDict)
-    #sys.exit()
-    raise ValueError("Error: Some worksheet missing some column(s), see missing column above")
-#extractColumnToFile(myExcelBook)
-extractColumnToFile(myExcelBook)
+    
+    
+# myExcelBook = loadData("quan.xlsx")
+# from constant import *
+# import sys
+# from util import printDict
+# rowTitleMust = [compoundNameTitle, mzExpectedTitle, libraryScoreTitle, measuredAreaTitle, ipTitle, lsTitle, rtMeasuredTitle, mzDeltaTitle]
+# 
+# [missingNum, missingRowTitleDict] = checkFileValid(myExcelBook, rowTitleMust)
+# if(missingNum > 0):
+#     print "Error: Some worksheet missing some column(s):"
+#     printDict(missingRowTitleDict)
+#     #sys.exit()
+#     raise ValueError("Error: Some worksheet missing some column(s), see missing column above")
+# #extractColumnToFile(myExcelBook)
+# extractColumnToFile(myExcelBook, "quan-filter.xlsx")
 
 #print myExcelBook
 

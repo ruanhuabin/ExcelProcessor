@@ -102,8 +102,12 @@ class Application:
            # print "text-field = ", self.text_field.get()
             tkMessageBox.showerror("Error", "Please enter a filename for the output file" )
             return
+        
+        outputFolderPath = self.outputFolderPath.get()
+        if(outputFolderPath[-1] != '/'):
+            outputFolderPath = outputFolderPath + "/"
             
-        outputFilename = self.outputFolderPath.get() + self.output_filename_entry.get()
+        outputFilename = outputFolderPath + self.output_filename_entry.get()
         
         filenameExtension = outputFilename.split(".")[-1]
         if(filenameExtension != "xlsx"):

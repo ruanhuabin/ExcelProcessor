@@ -109,63 +109,8 @@ def extractPartData(wordBook, rows = 6, output="partial.xlsx"):
     
     
     wb.save(filename=output)
+  
     
-    
-    
-    
-    
-    
-def loadScreenData(fileName):
-    print "start load data %s" % time.clock()
-    wholeWorkBook = {}
-    QuanData = load_workbook(fileName)
-    print "end load data %s" % time.clock()
-    sheetNames = QuanData.get_sheet_names()
-    #print sheetNames
-    sheetNames.sort()   
-    for currentSheetName in sheetNames:
-        print "load sheet Name %s: %s" % (currentSheetName, time.clock())
-        sheetData = QuanData.get_sheet_by_name(currentSheetName)
-        rows = sheetData.rows;
-        columns = sheetData.columns;
-        rowsNum = len(rows)
-        columsNum = len(columns)
-
-        cnt = 0
-        sheetRowTitleValue = []
-        sheetColValue = []       
-        #print "Data in ", currentSheetName, ":\n"
-        for row in rows:
-            for colValue in row:   
-                             
-                if(cnt < columsNum):
-                    sheetRowTitleValue.append(colValue.value)
-                else:
-                    sheetColValue.append(colValue.value)
-                    
-                cnt = cnt + 1
-        
-        wholeColumData = []
-        for i in range(columsNum):
-            columnData = []
-            for j in range(rowsNum - 1):
-                index = j * columsNum + i;
-                #print index
-                columnData.append(sheetColValue[index])
-            wholeColumData.append(columnData)
-               
-        
-        #print wholeColumData
-        
-        sheetDataFinal = {}
-        for i in range(columsNum):
-            sheetDataFinal[sheetRowTitleValue[i]] = wholeColumData[i]
-            
-        #print sheetDataFinal
-        
-        wholeWorkBook[currentSheetName] = sheetDataFinal
-        
-    return wholeWorkBook
 
 def createOutputWordBook():
     wb = Workbook()
@@ -535,10 +480,19 @@ def checkFileValid(dataBook, rowTitleList):
     return [missNum, missingRowTitle]     
 
 
-data = ["N/A", "N/A", "N/A","N/A", "N/A","N/A","abc"]
+def getCurrTime():    
+    st = time.localtime()
+    year = st.tm_year
+    month = st.tm_mon
+    day = st.tm_mday
+    hour = st.tm_hour
+    miniute = st.tm_min
+    sec = st.tm_sec
+    
+    strTime = str(year) + "-" + str("%02d" % month) + "-" + str("%02d" % day) + "-" + str("%02d" % hour) + ":" + str("%02d" % miniute) + ":" + str("%02d" % sec)
+    
+    return strTime
 
-result = isAllNA(data)
-print result
 
 
             
