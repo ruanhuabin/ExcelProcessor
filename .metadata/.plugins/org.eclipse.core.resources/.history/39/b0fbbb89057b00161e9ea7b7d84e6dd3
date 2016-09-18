@@ -1,0 +1,19 @@
+# encoding: utf-8
+
+'''
+Created on 2016Äê9ÔÂ15ÈÕ
+
+@author: ruanhuabin
+'''
+
+class MyClass(object):
+    '''
+    classdocs
+    '''
+
+
+    def __init__(self, params):
+        '''
+        Constructor
+        '''
+        

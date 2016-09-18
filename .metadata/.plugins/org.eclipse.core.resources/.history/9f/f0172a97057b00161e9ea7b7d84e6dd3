@@ -1,0 +1,14 @@
+# encoding: utf-8
+
+'''
+Created on 2016��9��15��
+
+@author: ruanhuabin
+'''
+import logging
+
+class MyClass(object):
+    
+    def __init__(self, params):
+        
+        

@@ -13,17 +13,22 @@ from constant import compoundNameTitle, libraryScoreTitle, rtMeasuredTitle,\
     NAValue, measuredAreaTitle, ipTitle, lsTitle, mzDeltaTitle
 
 
-def loadData(fileName):
-    print "start load data %s" % time.clock()
+def loadData(fileName, logger):
+    #print "start load data %s" % time.clock()
+    logger.info("Start loading data: " + fileName)
+    
     wholeWorkBook = {}
-    QuanData = load_workbook(fileName)
-    print "end load data %s" % time.clock()
-    sheetNames = QuanData.get_sheet_names()
+    inputDataDict = load_workbook(fileName)
+    #print "end load data %s" % time.clock()
+    logger.info("Finish loading data: " + fileName)
+    
+    sheetNames = inputDataDict.get_sheet_names()
     #print sheetNames
     sheetNames.sort()   
     for currentSheetName in sheetNames:
-        print "load sheet Name %s: %s" % (currentSheetName, time.clock())
-        sheetData = QuanData.get_sheet_by_name(currentSheetName)
+        #print "load sheet Name %s: %s" % (currentSheetName, time.clock())
+        logger.info("Start to load sheet data: " + currentSheetName)
+        sheetData = inputDataDict.get_sheet_by_name(currentSheetName)
         rows = sheetData.rows;
         columns = sheetData.columns;
         rowsNum = len(rows)

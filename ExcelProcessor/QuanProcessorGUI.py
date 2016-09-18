@@ -26,7 +26,7 @@ from Logger import MyLogger
 from util import getCurrTime
 import os
 
-class Application:
+class QuanFrame:
     def __init__(self, master):
         frame = Frame(master,width=400,height=600)
         frame.pack()   
@@ -181,11 +181,7 @@ class Application:
         
 #         import thread
 #         thread.start_new_thread(self.run_thread, (text_field,outputFilename))
-        
-        
-       
-        
-        
+  
         self.start_run_btn.configure(state=DISABLED)
         newThread = Thread(target = self.run_thread, args=(text_field, outputFilename))
         newThread.start()
@@ -205,7 +201,7 @@ def run_screen_processor():
     mainFrame.title("Quan Data Processor")
     mainFrame.geometry("600x800")
     mainFrame.resizable(False, False)
-    app = Application(mainFrame)
+    app = QuanFrame(mainFrame)
     mainFrame.mainloop()
 
 

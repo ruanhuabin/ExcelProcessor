@@ -9,12 +9,12 @@ import logging
 
 class MyLogger(object):
     
-    def __init__(self, loggerName):
+    def __init__(self, loggerName, loggerLevel=logging.DEBUG):
         self.logger = logging.getLogger(loggerName)
         self.logger.setLevel(logging.DEBUG)
         
         consoleHandler = logging.StreamHandler()
-        consoleHandler.setLevel(logging.DEBUG) 
+        consoleHandler.setLevel(loggerLevel) 
         
         formatter = logging.Formatter("%(asctime)s-[ %(levelname)s ]: %(message)s")
         

@@ -1,0 +1,13 @@
+# encoding: utf-8
+'''
+Created on 2016��9��15��
+
+@author: ruanhuabin
+'''
+
+def run_screen_process():
+    
+
+if __name__ == '__main__':
+    print "This is main function"
+    pass

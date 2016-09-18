@@ -18,15 +18,15 @@ from Screen import init, printDict, checkFileValid, extractCompoundNameColumn,\
 from constant import *
 from util import extractMZExpectData, writeWordBook
 import tkMessageBox
-from Quan import loadData, extractColumnToFile
+#from Quan import loadData, extractColumnToFile
 #import thread
 import time
 from threading import Thread
 from Logger import MyLogger
 from util import getCurrTime
 import os
-
-class Application:
+import logging
+class ScreenFrame:
     def __init__(self, master):
         frame = Frame(master,width=400,height=600)
         frame.pack()   
@@ -82,7 +82,7 @@ class Application:
         self.outputDataBook = {}
         self.inputFilename = ""
         
-        self.logger = MyLogger("Screen-Logger").getLogger()
+        self.logger = MyLogger("Screen-Logger", logging.INFO).getLogger()
         
        
         
@@ -232,7 +232,7 @@ def run_screen_processor():
     mainFrame.title("Screen Data Processor")
     mainFrame.geometry("600x800")
     mainFrame.resizable(False, False)
-    app = Application(mainFrame)
+    app = ScreenFrame(mainFrame)
     mainFrame.mainloop()
 
 

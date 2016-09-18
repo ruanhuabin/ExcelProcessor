@@ -21,18 +21,19 @@ import sys
 def init(src, logger):
 
     newScreenBook = createOutputWordBook()
-    screenDataBook = loadData(src)
+    screenDataBook = loadData(src, logger)
     sheetNames = list(screenDataBook)
     sheetNames.sort()
     #print sheetNames
     #print len(sheetNames)
-    logger.info("Sheet names [ %s ] in file [%s]" % (str(sheetNames), src))
+    logger.debug("Sheet names [ %s ] in file [%s]" % (str(sheetNames), src))
     sheetOne = newScreenBook.create_sheet("Sheet-1", 0)
     sheetTwo = newScreenBook.create_sheet("Sheet-2", 1)
     
     return [screenDataBook, newScreenBook]
 
 def extractCompoundNameColumn(screenDataBook, newScreenBook, logger):
+    logger.info("Start to extract compound name info")
     sheetNames = list(screenDataBook)
     sheetNames.sort()
 
@@ -51,7 +52,7 @@ def extractCompoundNameColumn(screenDataBook, newScreenBook, logger):
     
     #print "Final CompundNames: ", compoundNames
     #print "len = %d " % len(compoundNames)
-    logger.info("After remove duplicated compound names, the final compound names are: [%s]" % (str(compoundNames)))
+    logger.debug("After remove duplicated compound names, the final compound names are: [%s]" % (str(compoundNames)))
     #Append compound name data to first column of Sheet-1
     compoundNames = list(compoundNames)
     compoundNames.sort()
@@ -60,17 +61,20 @@ def extractCompoundNameColumn(screenDataBook, newScreenBook, logger):
     sheetOne = newScreenBook.get_sheet_by_name("Sheet-1")
     sheetTwo = newScreenBook.get_sheet_by_name("Sheet-2")
     #Append title
-    sheetOneRowTitle = [compoundNameTitle, mzExpectedTitle, rtMeasuredTitle, libraryScoreTitle, ipTitle, lsTitle, rtRangeTitle, mzDeltaTitle]
+    sheetOneRowTitle = [compoundNameTitle, mzExpectedTitle, rtTitle, libraryScoreTitle, ipTitle, lsTitle, rtRangeTitle, mzDeltaTitle]
     sheetOne.append(sheetOneRowTitle)
     sheetTwo.append(sheetOneRowTitle)
     writeDataToColumn(newScreenBook, "Sheet-1", compoundNames, 1, 2)
     writeDataToColumn(newScreenBook, "Sheet-2", compoundNames, 1, 2)
+    
+    logger.info("End to load compound name info")
     
     return compoundNames
 
 #start to append m/z (expected) data to Sheet-1
 def extractMZExpectColumn(screenDataBook, compoundNames, newScreenBook, logger):
 
+    logger.info("Start to extract M/Z Expected info")
     mzInfo = extractMZExpectData(screenDataBook)
     mzInfoList = []
     for compoundName in compoundNames:
@@ -79,20 +83,25 @@ def extractMZExpectColumn(screenDataBook, compoundNames, newScreenBook, logger):
     
     #print "mzInfo: ", mzInfo
     #print "mzInfoListLen = ", len(mzInfoList)
-    logger.info("mz info is: [num = %d], [%s]" % (len(mzInfoList), str(mzInfo)))
+    logger.debug("mz info is: [num = %d], [%s]" % (len(mzInfoList), str(mzInfo)))
     
     writeDataToColumn(newScreenBook, "Sheet-1", mzInfoList, 2, 2)
     writeDataToColumn(newScreenBook, "Sheet-2", mzInfoList, 2, 2)
+    
+    logger.info("End to extract M/Z Expected info")
 
 #Start to extract RT Value
 
 g_rtValue=[]
 def genRTColumn(screenDataBook, compoundNames, newScreenBook, logger):
+    logger.info("Start to extract RT info")
     lsmartInfo = extractLSMARTData(screenDataBook)
-    print lsmartInfo
+    #print lsmartInfo
     cpNames = list(lsmartInfo)
-    print cpNames
-    print len(cpNames)
+    #print cpNames
+    #print len(cpNames)
+    
+    logger.debug("lsmartInfo is: [num = %d], [%s]" % (len(lsmartInfo), str(lsmartInfo)))
     
     cpNames.sort()
     cprtInfo = []
@@ -100,7 +109,7 @@ def genRTColumn(screenDataBook, compoundNames, newScreenBook, logger):
         lsmartValue = lsmartInfo.get(currCPName)
         
         #print currCPName, ":"
-        logger.info("Current compound name: %s" % currCPName)
+        logger.debug("Current compound name: %s" % currCPName)
         lsInfo = []
         maInfo = []
         for currLSMARTValue in lsmartValue:
@@ -113,8 +122,8 @@ def genRTColumn(screenDataBook, compoundNames, newScreenBook, logger):
         #print isAllNA(lsInfo)
         #print maInfo
         
-        logger.info("library score info: [%s]" % (str(lsInfo)))
-        logger.info("measured area info: [%s]" % (str(maInfo)))
+        logger.debug("library score info: [%s]" % (str(lsInfo)))
+        logger.debug("measured area info: [%s]" % (str(maInfo)))
         
         isAllNAValue = isAllNA(lsInfo)
         if(isAllNAValue == False):
@@ -126,27 +135,31 @@ def genRTColumn(screenDataBook, compoundNames, newScreenBook, logger):
         #print lsmartValue   
         #print sortLSMARTValue
         
-        logger.info("lsmartValue: [%s]" % (str(lsmartValue)))
-        logger.info("sortLSMARTValue: [%s]" % (str(sortLSMARTValue)))
+        logger.debug("lsmartValue: [%s]" % (str(lsmartValue)))
+        logger.debug("sortLSMARTValue: [%s]" % (str(sortLSMARTValue)))
         
         cprtInfo.append(sortLSMARTValue[0][3])
     #print cprtInfo
-    logger.info("cprtInfo: [%s]" % (str(cprtInfo)))
+    logger.debug("cprtInfo: [%s]" % (str(cprtInfo)))
     writeDataToColumn(newScreenBook, "Sheet-1", cprtInfo, 3, 2)
     writeDataToColumn(newScreenBook, "Sheet-2", cprtInfo, 3, 2)
     
     #copy rtvalue to g_rtValue for the purpose of making highling of sheet2
     for v in cprtInfo:
         g_rtValue.append(v)
+    
+    logger.info("End to extract RT Info")
 
 #start to extract library score
 
 
 
 def genLibraryScoreColumn(screenDataBook, compoundNames, newScreenBook, logger):
+    
+    logger.info("Start to extract library score info")
     cplsInfo = extractCPLSData(screenDataBook)
-    print "cplsInfo: ", cplsInfo
-    logger.info("cplsInfo: [%s]" % (str(cplsInfo)))
+    #print "cplsInfo: ", cplsInfo
+    logger.debug("cplsInfo: [%s]" % (str(cplsInfo)))
     cpNames = list(cplsInfo)
     cpNames.sort()
     lsFinalInfo = []
@@ -165,20 +178,23 @@ def genLibraryScoreColumn(screenDataBook, compoundNames, newScreenBook, logger):
             lsFinalValue = lsInfo[0]
             
         #print currCPName, ":", lsInfo
-        logger.info("currCPName: [%s], lsInfo : [%s]" % (str(currCPName), str(lsInfo)))
+        logger.debug("currCPName: [%s], lsInfo : [%s]" % (str(currCPName), str(lsInfo)))
         
         lsFinalInfo.append(lsFinalValue)
     
-    print lsFinalInfo
-    logger.info("lsFinalInfo: [%s]" % (str(lsFinalInfo)))
+    #print lsFinalInfo
+    logger.debug("lsFinalInfo: [%s]" % (str(lsFinalInfo)))
     
     writeDataToColumn(newScreenBook, "Sheet-1", lsFinalInfo, 4, 2)
     writeDataToColumn(newScreenBook, "Sheet-2", lsFinalInfo, 4, 2)
     
+    logger.info("End to extract library score info")
+    
 def genIPColumn(screenDataBook, compoundNames, newScreenBook, logger):
+    logger.info("Start to extract IP info")
     ipInfoDict = extractIPData(screenDataBook)
     #print "ipInfoList = ", ipInfoDict
-    logger.info("ipInfoDict: [%s]" % (str(ipInfoDict)))
+    logger.debug("ipInfoDict: [%s]" % (str(ipInfoDict)))
     cpNames = list(ipInfoDict)
     cpNames.sort()
     
@@ -199,20 +215,24 @@ def genIPColumn(screenDataBook, compoundNames, newScreenBook, logger):
             ipFinalInfo.append("Fail")
         
         #print ipInfoList
-        logger.info("compound name = %s, ipInfoList = [%s]" %(currCPName, str(ipInfoList)))
+        logger.debug("compound name = %s, ipInfoList = [%s]" %(currCPName, str(ipInfoList)))
     
     #print "IP Final Info: " , ipFinalInfo
-    logger.info("IP Final Info: %s" %(str(ipFinalInfo)))
+    logger.debug("IP Final Info: %s" %(str(ipFinalInfo)))
     writeDataToColumn(newScreenBook, "Sheet-1", ipFinalInfo, 5, 2)
     writeDataToColumn(newScreenBook, "Sheet-2", ipFinalInfo, 5, 2)
     
+    logger.info("End to extract IP info")
+    
     
 def genLSColumn(screenDataBook, compoundNames, newScreenBook, logger):
+    
+    logger.info("Start to extract LS info")
     lsInfoDict = extractLSData(screenDataBook)
-    logger.info("lsInfoList = [%s]" % str(lsInfoDict))
+    logger.debug("lsInfoList = [%s]" % str(lsInfoDict))
     cpNames = list(lsInfoDict)
     cpNames.sort()
-    logger.info("cpNames = %s" %(str(cpNames)))
+    logger.debug("cpNames = %s" %(str(cpNames)))
     
     lsFinalInfo = []
     
@@ -230,17 +250,20 @@ def genLSColumn(screenDataBook, compoundNames, newScreenBook, logger):
             lsFinalInfo.append("Fail")
         
         #print lsInfoList
-        logger.info("compound name = %s, lsInfoList: [%s]" % (currCPName, str(lsInfoList)))
+        logger.debug("compound name = %s, lsInfoList: [%s]" % (currCPName, str(lsInfoList)))
     
     #print "LS Final Info: " , lsFinalInfo
-    logger.info("lsFinalInfo: [%s]" % (str(lsFinalInfo)))
+    logger.debug("lsFinalInfo: [%s]" % (str(lsFinalInfo)))
     writeDataToColumn(newScreenBook, "Sheet-1", lsFinalInfo, 6, 2)
     writeDataToColumn(newScreenBook, "Sheet-2", lsFinalInfo, 6, 2)
     
+    logger.info("End to extract LS info")
+    
 def genRTRangeColumn(screenDataBook, compoundNames, newScreenBook, logger):
+    logger.info("Start to extract RT Range info")
     rtMeasuredInfoDict = extractRTMeasuredData(screenDataBook)
     #print "rtMeasuredInfoList = ", rtMeasuredInfoDict
-    logger.info("rtMeasuredInfoList: [%s]" % (str(rtMeasuredInfoDict)))
+    logger.debug("rtMeasuredInfoList: [%s]" % (str(rtMeasuredInfoDict)))
     cpNames = list(rtMeasuredInfoDict)
     cpNames.sort()
     #print "cpNames = ", cpNames
@@ -257,22 +280,24 @@ def genRTRangeColumn(screenDataBook, compoundNames, newScreenBook, logger):
         rtMeasuredInfoList.sort()
         
         #print rtMeasuredInfoList
-        logger.info("currCPName = %s, rtMeasuredInfoList: [%s]" % (currCPName, str(rtMeasuredInfoList)))
+        logger.debug("currCPName = %s, rtMeasuredInfoList: [%s]" % (currCPName, str(rtMeasuredInfoList)))
         
         rangeValue = rtMeasuredInfoList[-1] - rtMeasuredInfoList[0]
         #rtMeasuredFinalInfo.append([currCPName, rangeValue])
         rtMeasuredFinalInfo.append(rangeValue)
     
     #print "RT Range Final Info: " , rtMeasuredFinalInfo
-    logger.info("RT Range Final Info: : [%s]" % (str(rtMeasuredFinalInfo)))
+    logger.debug("RT Range Final Info: : [%s]" % (str(rtMeasuredFinalInfo)))
     writeDataToColumn(newScreenBook, "Sheet-1", rtMeasuredFinalInfo, 7 , 2)
     writeDataToColumn(newScreenBook, "Sheet-2", rtMeasuredFinalInfo, 7 , 2)
+    logger.info("End to extract RT Range info")
 
 
 def genMZDeltaColumn(screenDataBook, compoundNames, newScreenBook, logger):
+    logger.info("Start to extract MZ Delta info")
     mzDeltaInfoDict = extractMZDeltaData(screenDataBook)
     #print "MZDeltaInfoList = ", mzDeltaInfoDict
-    logger.info("MZDeltaInfoList: [%s]" % ( str(mzDeltaInfoDict)))
+    logger.debug("MZDeltaInfoList: [%s]" % ( str(mzDeltaInfoDict)))
     cpNames = list(mzDeltaInfoDict)
     cpNames.sort()
     
@@ -288,25 +313,29 @@ def genMZDeltaColumn(screenDataBook, compoundNames, newScreenBook, logger):
                        
         #print mzDeltaInfoList
         
-        logger.info("currCPName = %s, mzDeltaInfoList: [%s]" % (currCPName, str(mzDeltaInfoList)))
+        logger.debug("currCPName = %s, mzDeltaInfoList: [%s]" % (currCPName, str(mzDeltaInfoList)))
         
         averageValue = float(sum(mzDeltaInfoList)) / len(mzDeltaInfoList)
         #mzDeltaFinalInfo.append([currCPName, averageValue])
         mzDeltaFinalInfo.append(averageValue)
     
-    print "MZ Delta Final Info: " , mzDeltaFinalInfo
-    logger.info("MZ Delta Final Info: " + str(mzDeltaFinalInfo))
+    #print "MZ Delta Final Info: " , mzDeltaFinalInfo
+    logger.debug("MZ Delta Final Info: " + str(mzDeltaFinalInfo))
     writeDataToColumn(newScreenBook, "Sheet-1", mzDeltaFinalInfo, 8, 2)
     writeDataToColumn(newScreenBook, "Sheet-2", mzDeltaFinalInfo, 8, 2)
+    
+    logger.info("End to extract MZ Delta info")
 
 def getKey(item):
     return item[0]
    
 def genMeasuredAreaColumn(screenDataBook, compoundNames, newScreenBook, logger):
+    
+    logger.info("Start to extract Measured Area Delta info")
     measuredAreaInfoDict = extractMeasuredAreaData(screenDataBook)
     #print "measuredAreaInfoDict = ", measuredAreaInfoDict
     
-    logger.info("measuredAreaInfoDict = " + str(measuredAreaInfoDict))
+    logger.debug("measuredAreaInfoDict = " + str(measuredAreaInfoDict))
     cpNames = list(measuredAreaInfoDict)
     cpNames.sort()
     
@@ -323,7 +352,7 @@ def genMeasuredAreaColumn(screenDataBook, compoundNames, newScreenBook, logger):
         snmaValues.sort(key=getKey)
         #print currCPName, ":"
         #print ">>: ", snmaValues
-        logger.info("current compound name = %s, snmaValues = %s" %(currCPName, snmaValues))
+        logger.debug("current compound name = %s, snmaValues = %s" %(currCPName, snmaValues))
         maValues = []
         for[sn, ma] in snmaValues:
             maValues.append(ma)
@@ -334,12 +363,15 @@ def genMeasuredAreaColumn(screenDataBook, compoundNames, newScreenBook, logger):
         
         
     #print sheetNames
+    logger.info("Start to extract Measured Area Delta info")
     
     
 def genRTMeasuredColumn(screenDataBook, compoundNames, newScreenBook, logger):
+    
+    logger.info("Start to extract RT Measured Data")
     rtMeasuredInfoDict = extractALLRTMeasuredData(screenDataBook)
-    print "rtMeasuredInfoDict = ", rtMeasuredInfoDict
-    logger.info("rtMeasuredInfoDict = " + str(rtMeasuredInfoDict))
+    #print "rtMeasuredInfoDict = ", rtMeasuredInfoDict
+    logger.debug("rtMeasuredInfoDict = " + str(rtMeasuredInfoDict))
     cpNames = list(rtMeasuredInfoDict)
     cpNames.sort()
     #print "cpNames = ", cpNames
@@ -358,7 +390,7 @@ def genRTMeasuredColumn(screenDataBook, compoundNames, newScreenBook, logger):
         #print currCPName, ":"
         #print ">>: ", snrtmValues
         
-        logger.info("Current compound name = %s, snrtmValues = %s" %(currCPName, snrtmValues))
+        logger.debug("Current compound name = %s, snrtmValues = %s" %(currCPName, snrtmValues))
         maValues = []
         for[sn, ma] in snrtmValues:
             maValues.append(ma)
@@ -370,7 +402,8 @@ def genRTMeasuredColumn(screenDataBook, compoundNames, newScreenBook, logger):
         
         
         
-    print sheetNames
+    #print sheetNames
+    logger.info("End to extract RT Measured Data")
         
 
 rowTitleMust = [compoundNameTitle, mzExpectedTitle, libraryScoreTitle, measuredAreaTitle, ipTitle, lsTitle, rtMeasuredTitle, mzDeltaTitle]

@@ -188,6 +188,7 @@ def extractColumnToFile(wordBook, outputFilename, logger):
             expectRTValue = expectedRTData[i]
             actualRTValue = actualRTData[i]
             
+            actualRTOrigValue = actualRTValue
             if(actualRTValue == "N/F"):
                 actualRTValue = float("0.0")
 #             else:
@@ -200,7 +201,7 @@ def extractColumnToFile(wordBook, outputFilename, logger):
                 
             diff = math.fabs(actualRTValue - expectRTValue)
             
-            if(diff >= 0.2):
+            if(diff >= 0.2 and actualRTOrigValue != "N/F" ):
                 ws2.cell(row = i + 2, column = columnIndex).font = ft
         
         

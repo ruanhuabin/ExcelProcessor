@@ -15,6 +15,7 @@ ipTitle = "IP"
 rtTitle = "RT"
 lsTitle = "LS"
 rtRangeTitle = "RT range"
+rtTitle = "RT"
 
 
 #Title for quan data

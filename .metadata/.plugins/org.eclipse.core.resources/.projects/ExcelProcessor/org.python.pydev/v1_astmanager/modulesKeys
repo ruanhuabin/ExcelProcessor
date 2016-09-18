@@ -1,7 +1,7 @@
 MODULES_MANAGER_V2
 Logger|D:\workspace-excelprocess-final\ExcelProcessor\Logger.py
 Quan|D:\workspace-excelprocess-final\ExcelProcessor\Quan.py
-QuanGUI|D:\workspace-excelprocess-final\ExcelProcessor\QuanGUI.py
+QuanProcessorGUI|D:\workspace-excelprocess-final\ExcelProcessor\QuanProcessorGUI.py
 SampleGUI|D:\workspace-excelprocess-final\ExcelProcessor\SampleGUI.py
 Screen|D:\workspace-excelprocess-final\ExcelProcessor\Screen.py
 ScreenGUI|D:\workspace-excelprocess-final\ExcelProcessor\ScreenGUI.py
