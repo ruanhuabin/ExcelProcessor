@@ -5,5 +5,6 @@ encoding/QuanProcessorGUI.py=utf-8
 encoding/Screen.py=utf-8
 encoding/ScreenProcessorGUI.py=utf-8
 encoding/constant.py=utf-8
+encoding/lipid.py=utf-8
 encoding/screen-console.py=utf-8
 encoding/util.py=utf-8

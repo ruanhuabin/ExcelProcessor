@@ -1,6 +1,7 @@
 
 import operator
 from __builtin__ import sorted
+from util import printDict
 
 data = dict()
 
@@ -54,5 +55,94 @@ str1 = "This is a message: [%s:%d]" % (b, a)
 
 
 print str1
+
+
+
+
+def addValueToDict(key, table, item):
+    origValues = table[key]
+    origValues.append(item)
+    
+    table[key] = origValues
+    
+    return table
+
+def reverseDictTest(dictData):
+    
+    newDict = {}
+    for(k,v) in dictData.iteritems():
+        v = str(v[0])
+        if(newDict.has_key(v)):
+            newDict[v].append(k)
+        else:
+            newDict[v] = [k]
+            
+    return newDict
+  
+import re 
+def getGroupNum(compndName):
+    
+    parenthesesPart = re.search('\(.*\)', compndName).group();   
+    print("parenthesesPart = " + str(parenthesesPart))
+    semicolon = re.findall(':', str(parenthesesPart))  
+    
+    print("semicolon = " + str(semicolon))    
+    
+    return len(semicolon)
+
+def getGroupNum2(compndName):
+    
+    parenthesesPart = re.search(r'((.*))', compndName).group();   
+    print("parenthesesPart = " + str(parenthesesPart))
+    semicolon = re.findall(':', str(parenthesesPart))  
+    
+    print("semicolon = " + str(semicolon))    
+    
+    return len(semicolon)
+            
+
 if __name__ == '__main__':
-    pass
+    
+   num =  getGroupNum('TG(9:0/9:0/19:4)+NH4')
+   print("num = " + str(num))
+    
+#     dictData3 = {}
+#     dictData3["a"] = ["va"]
+#     dictData3["b"] = ["va"]
+#     dictData3["c"] = ["vc"]
+#     
+#     newDict3 = reverseDictTest(dictData3)
+#     print newDict3
+    
+#     pass
+# 
+#     
+#     key = "key1"
+#     myTable = {}
+#     myTable[key] = ["item1", "item2"]
+#     
+#     print myTable
+#     addValueToDict(key, myTable, "item3")
+#     print myTable
+#     
+#     
+#     li = ['A', 'C', 'B', 'D']
+#     
+#     if('A' in li):
+#         print "True"
+#     
+#     if('F' in li):
+#         print "True"
+#     else:
+#         print "False"
+#         
+#         
+#     
+#     mySet = set()
+#     li2 = [[1,2], [3,4],[5,6]]
+#     #li2 = str(li2)
+#     for item in li2:
+#         mySet.add(str(item))
+#         
+#     print mySet
+#     pass

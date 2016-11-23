@@ -26,5 +26,12 @@ quanAreaTitle = "Area"
 quanActualRTTitle = "Actual RT"
 
 
+#Title for lipid data
+lipidCompndName = "LipidIon"
+lipidGrade = "Grade"
+lipidFormula = "Formula"
+lipidTopRT = "TopRT"
+
+
 
 NAValue = -10000L

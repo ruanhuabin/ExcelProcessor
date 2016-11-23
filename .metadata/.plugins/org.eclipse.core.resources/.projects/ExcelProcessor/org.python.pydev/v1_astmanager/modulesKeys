@@ -2,11 +2,9 @@ MODULES_MANAGER_V2
 Logger|D:\workspace-excelprocess-final\ExcelProcessor\Logger.py
 Quan|D:\workspace-excelprocess-final\ExcelProcessor\Quan.py
 QuanProcessorGUI|D:\workspace-excelprocess-final\ExcelProcessor\QuanProcessorGUI.py
-SampleGUI|D:\workspace-excelprocess-final\ExcelProcessor\SampleGUI.py
 Screen|D:\workspace-excelprocess-final\ExcelProcessor\Screen.py
-ScreenGUI|D:\workspace-excelprocess-final\ExcelProcessor\ScreenGUI.py
 ScreenProcessorGUI|D:\workspace-excelprocess-final\ExcelProcessor\ScreenProcessorGUI.py
 Test|D:\workspace-excelprocess-final\ExcelProcessor\Test.py
 constant|D:\workspace-excelprocess-final\ExcelProcessor\constant.py
-main_gui|D:\workspace-excelprocess-final\ExcelProcessor\main_gui.py
+lipid|D:\workspace-excelprocess-final\ExcelProcessor\lipid.py
 util|D:\workspace-excelprocess-final\ExcelProcessor\util.py

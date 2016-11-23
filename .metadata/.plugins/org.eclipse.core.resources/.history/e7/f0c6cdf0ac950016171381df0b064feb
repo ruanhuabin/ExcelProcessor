@@ -1,0 +1,340 @@
+# encoding: utf-8
+from Logger import MyLogger
+import logging
+from util import printDict
+import math
+import glob
+
+
+def nonBlankLines(f):
+    for l in f:
+        line = l.rstrip()
+        if line and line[0] != '#':
+            yield line
+
+
+
+
+def readTextFile(fileName, logger): 
+    content = []  
+    with open(fileName) as f:
+        for line in nonBlankLines(f):
+            content.append(line)
+    
+    return content
+
+def loadTextFile(fileName, logger = 0):
+    content = readTextFile(fileName, logger)
+    headerLine = []
+    if(len(content) > 0):
+        headerLine = content[0].split('\t')
+    
+    headers = []
+    dataDict = {}
+    for header in headerLine:
+        headers.append(header)
+        dataDict[header] = {}
+    
+    
+    count = 0    
+    for item in content:
+        item = item.split('\t')
+        count += 1
+        itemLen = len(item)
+        #print count, ":", itemLen, ":" , item
+        logger.debug("%d:%d:%s" % (count, itemLen, str(item)))
+    #transpose the list of lists
+    content2 = []
+    for item in content:
+        item = item.split('\t')
+        content2.append(item)
+        
+    
+    #Transpose the content matrix
+    contentT = [[x[i] for x in content2] for i in range(len(content2[0]))]
+    count = 0
+    logger.debug("After transpose:")
+    for item in contentT:        
+        count += 1
+        itemLen = len(item)
+        #print count, ":", itemLen, ":" , item
+        logger.debug("%d:%d:%s" % (count, itemLen, str(item)))
+    
+    for item in contentT:
+        header = item[0]
+        item.pop(0)
+        dataDict[header] = item
+        
+    
+    #print "Value in dataDict: ", dataDict
+    #printDict(dataDict)
+    #print dataDict
+        
+    return dataDict
+
+def extractLipidIon(dataDict, logger):
+    lipidIon = dataDict["LipidIon"]
+    Rt = dataDict["Rt"]
+    TopRT = dataDict["TopRT"]
+    Formula = dataDict["Formula"]
+    Grade = dataDict["Grade"]
+    
+    ms2Window = 0.2
+    
+    lipidFinal = []
+    rtFinal = []
+    topRTFinal = []
+    formulaFinal = []
+    gradeFinal = []
+    
+    origLen = len(lipidIon)
+    for i in range(origLen):
+        rtValue = Rt[i]
+        topRTValue = TopRT[i]
+        lipidName = lipidIon[i]
+        formulaValue = Formula[i]
+        gradeValue = Grade[i]
+        
+        
+        diff = math.fabs(float(rtValue) - float(topRTValue))
+        if( diff <= ms2Window):
+            
+            lipidFinal.append(lipidName)
+            rtFinal.append(rtValue)
+            topRTFinal.append(topRTValue)
+            formulaFinal.append(formulaValue)
+            gradeFinal.append(gradeValue)
+            
+            
+            
+            logger.info("Append to lipid Final: %s : %s: %s : %f" %(lipidName, rtValue, topRTValue, diff))
+        else:
+            
+            logger.info("NOT to Append to lipid Final: %s : %s: %s : %f" %(lipidName, rtValue, topRTValue, diff))
+            
+    
+    logger.info("LipidFinal = " + str(lipidFinal))
+    logger.info("formulaFinal = " + str(formulaFinal))
+    logger.info("topRTFinal = " + str(topRTFinal))
+    logger.info("gradeFinal = " + str(gradeFinal))
+    logger.info("Total lipidIon: %d, final added: %d" % (len(lipidIon), len(lipidFinal)))
+    
+    
+def splitLipidionName(lipidionName):  
+    pos1 = lipidionName.find("(")
+    pos2 = lipidionName.find(")")
+    
+    middleStr = lipidionName[pos1+1:pos2]
+    
+    prefixStr = lipidionName[0:pos1]
+    suffixStr = lipidionName[pos2+1:]
+    
+    
+    
+    return (prefixStr, middleStr, suffixStr)          
+
+def splitMiddlerStr(middleStr):
+    pos1 = middleStr.find('/')
+    
+    middlePrefix = middleStr[0:pos1]
+    middleSuffix = middleStr[pos1 + 1:]
+    
+    return (middlePrefix, middleSuffix)
+def isAlpha(c):
+    return c == 'd' or c == 'e' or c == 'p'
+
+def isMiddleSame(middlePrefix1, middleSuffix1, middlePrefix2, middleSuffix2):
+    
+    if(middlePrefix1 == middlePrefix2):
+        if(middleSuffix1 == middleSuffix2):
+            return True
+        else:
+            return False
+    elif(middlePrefix1 == middleSuffix2):
+        if(middleSuffix1 == middlePrefix2):
+            return True
+        else:
+            return False
+    else:
+        return False
+    
+    
+def mergeLipidionName(prefix, middle, suffix):
+    colonIndex1 = middle.find(':', 0)
+    slashIndex = middle.find('/')
+    colonIndex2 = middle.find(':', slashIndex)
+    
+    
+    c = middle[0]
+    if(isAlpha(c)):
+        n1 = middle[1:colonIndex1]
+    else:
+        n1 = middle[0:colonIndex1]
+    
+    n2 = middle[colonIndex1 + 1:slashIndex]
+    
+    
+    n3 = middle[slashIndex + 1:colonIndex2]
+    n4 = middle[colonIndex2 + 1:]
+    
+    logger.info("n1 = " + n1 + ", n2 = " + n2 + ", n3 = " + n3 + ", n4 = " + n4)
+    
+    n5 = int(n1) + int(n3)
+    n6 = int(n2) + int(n4)
+    
+    newMiddle = str(n5) + ":" + str(n6)
+    finalMiddle = newMiddle
+    
+    if(isAlpha(c)):
+        finalMiddle = c + newMiddle
+    
+    finalCompoundName = prefix + "(" + finalMiddle + ")" + suffix
+    
+    logger.info("finalCompoundName = " + finalCompoundName )
+    
+    return finalCompoundName
+    
+    #return "a1"
+    
+       
+    
+def isSameCompound(lipidionName1, lipidionName2, grade1, grade2, logger):
+    #extracting characters in lipidionName between ()
+    (prefix1, middle1, suffix1) = splitLipidionName(lipidionName1)
+    (prefix2, middle2, suffix2) = splitLipidionName(lipidionName2)
+    
+    logger.info("prefix1 = " + prefix1 + ", middle1 = " + middle1 + ", suffix1 = " + suffix1)
+    logger.info("prefix2 = " + prefix2 + ", middle2 = " + middle2 + ", suffix2 = " + suffix2)
+    
+    presufix1 = prefix1 + suffix1
+    presufix2 = prefix2 + suffix2
+    
+    flag1 = (presufix1 == presufix2)
+    
+    if(flag1 == True):
+        logger.info("prefix and suffix is the same %s" % presufix1)
+    else:
+        logger.info("prefix and suffix is not the same (%s, %s)" % (presufix1, presufix2))
+
+    c1 = middle1[0]
+    c2 = middle2[0]
+    
+    flag2 = False
+    if(c1 == c2 and isAlpha(c1)):
+        flag2 = True
+    if(flag2 == True):
+        logger.info("contains alpha %s in middle, and is the same" % c1)
+    else:
+        logger.info("middle is not the same")
+    
+    
+    (middlePrefix1, middleSuffix1) = splitMiddlerStr(middle1)
+    (middlePrefix2, middleSuffix2) = splitMiddlerStr(middle2)
+    
+    logger.info("middlePrefix1 = " + middlePrefix1 + ", middleSuffix1 = " + middleSuffix1)
+    logger.info("middlePrefix2 = " + middlePrefix2 + ", middleSuffix2 = " + middleSuffix2)
+    
+    
+    #flag2 is used to indicating whether middle str including 'd,e,p'
+    if(grade1 == grade2 and (grade1 == 'A' or grade1 == 'B') and flag2 == True):
+        logger.info("run here")
+        return lipidionName1 == lipidionName2
+    elif(grade1 == grade2 and (grade1 == 'A' or grade1 == 'B') and flag2 == False):
+        if(isMiddleSame(middlePrefix1, middleSuffix1, middlePrefix2, middleSuffix2) == True):
+            logger.info("===>middle is the same")
+            return True
+        else:
+            logger.info("===>middle is not the same")
+            return False
+    
+    
+        
+    
+    if(grade1 == grade2 and (grade1 == 'C' or grade1 == 'D')):
+        compound1 = mergeLipidionName(prefix1, middle1, suffix1)
+        compound2 = mergeLipidionName(prefix2, middle2, suffix2)
+        return compound1 == compound2
+    
+    
+    
+    
+    
+    return True        
+    
+
+def getFileList(path):
+    
+    finalPath = path + "./*.txt"
+    fileList = glob.glob(finalPath)
+    
+    return fileList
+    
+    
+def loadAllTextFile(dirName, logger):
+    fileList = getFileList(dirName)
+    allSampleDataBook = {}
+    for f in fileList:
+        currSampleData = loadTextFile(f, logger)
+        allSampleDataBook[f] = currSampleData 
+    
+    return allSampleDataBook
+    
+def getNumberStr(middle, logger):
+    
+    #check whether contains 'd, e, p'
+    slashIndex = middle.find('/')
+    flag1 = False
+    if(isAlpha(middle[0])):
+        flag1 = True
+    
+    flag2 = False
+    if(isAlpha(middle[slashIndex - 1])):
+        flag2 = True
+    finalMiddleStr = ""
+    if(flag1 == True and flag2 == False):
+        finalMiddleStr = middle[1:]
+    elif(flag1 == False and flag2 == True):
+        finalMiddleStr = middle[0:slashIndex - 1] + middle[slashIndex:]
+    else:
+        finalMiddleStr = middle
+        
+    #0:alpha is in middle[0]
+    #1: alpha is in middle[slashIndex -1]
+    #-1: no alpha in middle
+    if(flag1 == True and flag2 == False):
+        return (finalMiddleStr, 0)
+    elif(flag1 = False and flag2 == True):
+        return (finalMiddleStr, 1)
+    else:
+        return (finalMiddleStr, -1)
+    
+    
+        
+
+
+
+if __name__ == '__main__':
+
+    logger = MyLogger("Lipid-Logger", logging.INFO).getLogger()
+#     dataDict = loadTextFile("sample.txt", logger)
+#     extractLipidIon(dataDict, logger)
+
+#     flag = isSameCompound("Cer(d18:1/16:0)+H", "Cer(d16:0/18:1)+H", "C", "C", logger)
+#     if(flag == True):
+#         logger.info("compound is the same")
+#     else:
+#         logger.info("compound is not the same")
+#         
+#     
+#     flag = isSameCompound("Cer(18:1/16:0)+H", "Cer(16:0/18:1)+H", "C", "C", logger)
+#     if(flag == True):
+#         logger.info("compound is the same")
+#     else:
+#         logger.info("compound is not the same")
+
+
+    fileList = getFileList("./lipiddata/")
+    logger.info("File List = " + str(fileList))
+    dataDict = loadTextFile(fileList[0], logger)
+    extractLipidIon(dataDict, logger)
+    pass

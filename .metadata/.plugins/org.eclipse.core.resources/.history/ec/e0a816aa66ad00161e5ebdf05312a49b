@@ -1,0 +1,808 @@
+# encoding: utf-8
+from Logger import MyLogger
+import logging
+from util import printDict
+import math
+import glob
+from constant import lipidCompndName, lipidGrade, lipidFormula, lipidTopRT
+import re
+
+def nonBlankLines(f):
+    for l in f:
+        line = l.rstrip()
+        if line and line[0] != '#':
+            yield line
+
+
+
+
+def readTextFile(fileName, logger): 
+    content = []  
+    with open(fileName) as f:
+        for line in nonBlankLines(f):
+            content.append(line)
+    
+    return content
+
+def loadTextFile(fileName, logger = 0):
+    content = readTextFile(fileName, logger)
+    headerLine = []
+    if(len(content) > 0):
+        headerLine = content[0].split('\t')
+    
+    headers = []
+    dataDict = {}
+    for header in headerLine:
+        headers.append(header)
+        dataDict[header] = {}
+    
+    
+    count = 0   
+    #content中的每个元素是文件中的一行，每个元素就是个普通的字符串，这个字符串是文件中的完整一行 
+    for item in content:
+        item = item.split('\t')
+        count += 1
+        itemLen = len(item)
+        #print count, ":", itemLen, ":" , item
+        logger.debug("%d:%d:%s" % (count, itemLen, str(item)))
+    #transpose the list of lists
+    #content2是一个list，其的每一个元素也是一个list，每个元素的list中包含文件中一行的内容，每个元素list中的每一个元素是该行中的某一列对应的内容，简单来说：content2中的内容就是将文件中的
+    #内容按照矩阵元素的方式进行存储了。
+    content2 = []
+    for item in content:
+        item = item.split('\t')
+        content2.append(item)
+        
+    
+    #Transpose the content matrix
+    logger.debug("file name =" + fileName)
+    #第二个for循环先固定每一列的index，然后在内层第一个循环中取content2中的每一行，取每一行的第index个元素作为contentT中第index个元素，从而达到矩阵转置的目的
+    
+    #调试这个文件：LP08-136-3-pos-1ul-C1-10.txt，他的252行有些问题，只有33列的数据，正常应该是34列的数据，这个文件中第252行的QuantInfo这列木有数据
+    logger.debug("Total Columns = " + str(len(content2[0]) - 1))
+    cnt = 0
+    lenCol = len(content2[0]) - 1
+    for x in content2:
+        cnt = cnt + 1
+        lenx = len(x)
+        if(lenx < lenCol):
+            logger.debug("<=======>")
+            logger.debug("lenx = " + str(lenx) + ", lenCol = " + str(lenCol))
+            logger.debug("cnt = " + str(cnt))
+            logger.debug("line = " + str(x))
+            logger.debug("<=======>")
+        
+    
+    #有些文件，如LP08-136-3-pos-1ul-C1-10.txt的最后一列quantinfo没有数据，这列的数据由于不要提取出来，为处理方便，就不要这列的数据了    
+    contentT = [[x[i] for x in content2] for i in range(len(content2[0]) - 1)]
+    count = 0
+    logger.debug("After transpose:")
+    for item in contentT:        
+        count += 1
+        itemLen = len(item)
+        #print count, ":", itemLen, ":" , item
+        logger.debug("%d:%d:%s" % (count, itemLen, str(item)))
+    
+    for item in contentT:
+        header = item[0]
+        item.pop(0)
+        dataDict[header] = item
+        
+    
+    #print "Value in dataDict: ", dataDict
+    #printDict(dataDict)
+    #print dataDict
+        
+    return dataDict
+
+#得到每个文件中符合条件的化合物的名称，条件为：如果该化合物对应的Rt值和TopRT值的差小于等于0.2，我们就将该化合物保存起来。
+def extractLipidIon(dataDict, logger):
+    lipidIon = dataDict["LipidIon"]
+    Rt = dataDict["Rt"]
+    TopRT = dataDict["TopRT"]
+    Formula = dataDict["Formula"]
+    Grade = dataDict["Grade"]
+    
+    ms2Window = 0.2
+    
+    lipidFinal = []
+    rtFinal = []
+    topRTFinal = []
+    formulaFinal = []
+    gradeFinal = []
+    
+    origLen = len(lipidIon)
+    for i in range(origLen):
+        rtValue = Rt[i]
+        topRTValue = TopRT[i]
+        lipidName = lipidIon[i]
+        formulaValue = Formula[i]
+        gradeValue = Grade[i]
+        
+        
+        diff = math.fabs(float(rtValue) - float(topRTValue))
+        if( diff <= ms2Window):
+            
+            lipidFinal.append(lipidName)
+            rtFinal.append(rtValue)
+            topRTFinal.append(topRTValue)
+            formulaFinal.append(formulaValue)
+            gradeFinal.append(gradeValue)            
+            
+            logger.debug("Append to lipid Final: %s : %s: %s : %f" %(lipidName, rtValue, topRTValue, diff))
+        else:
+            
+            logger.debug("NOT to Append to lipid Final: %s : %s: %s : %f" %(lipidName, rtValue, topRTValue, diff))
+            
+    
+    logger.debug("LipidFinal = " + str(lipidFinal))
+#     logger.info("formulaFinal = " + str(formulaFinal))
+#     logger.info("topRTFinal = " + str(topRTFinal))
+#     logger.info("gradeFinal = " + str(gradeFinal))
+#     logger.info("Total lipidIon: %d, final added: %d" % (len(lipidIon), len(lipidFinal)))
+    
+    return lipidFinal
+    
+    
+def splitLipidionName(lipidionName):  
+    pos1 = lipidionName.find("(")
+    pos2 = lipidionName.find(")")
+    
+    middleStr = lipidionName[pos1+1:pos2]
+    
+    prefixStr = lipidionName[0:pos1]
+    suffixStr = lipidionName[pos2+1:]
+    
+    
+    
+    return (prefixStr, middleStr, suffixStr)          
+
+def splitMiddlerStr(middleStr):
+    pos1 = middleStr.find('/')
+    
+    middlePrefix = middleStr[0:pos1]
+    middleSuffix = middleStr[pos1 + 1:]
+    
+    return (middlePrefix, middleSuffix)
+def isAlpha(c):
+    return c == 'd' or c == 'e' or c == 'p'
+
+def isMiddleSame(middlePrefix1, middleSuffix1, middlePrefix2, middleSuffix2):
+    
+    if(middlePrefix1 == middlePrefix2):
+        if(middleSuffix1 == middleSuffix2):
+            return True
+        else:
+            return False
+    elif(middlePrefix1 == middleSuffix2):
+        if(middleSuffix1 == middlePrefix2):
+            return True
+        else:
+            return False
+    else:
+        return False
+    
+    
+def mergeLipidionName(prefix, middle, suffix):
+    colonIndex1 = middle.find(':', 0)
+    slashIndex = middle.find('/')
+    colonIndex2 = middle.find(':', slashIndex)
+    
+    
+    c = middle[0]
+    if(isAlpha(c)):
+        n1 = middle[1:colonIndex1]
+    else:
+        n1 = middle[0:colonIndex1]
+    
+    n2 = middle[colonIndex1 + 1:slashIndex]
+    
+    
+    n3 = middle[slashIndex + 1:colonIndex2]
+    n4 = middle[colonIndex2 + 1:]
+    
+    logger.info("n1 = " + n1 + ", n2 = " + n2 + ", n3 = " + n3 + ", n4 = " + n4)
+    
+    n5 = int(n1) + int(n3)
+    n6 = int(n2) + int(n4)
+    
+    newMiddle = str(n5) + ":" + str(n6)
+    finalMiddle = newMiddle
+    
+    if(isAlpha(c)):
+        finalMiddle = c + newMiddle
+    
+    finalCompoundName = prefix + "(" + finalMiddle + ")" + suffix
+    
+    logger.info("finalCompoundName = " + finalCompoundName )
+    
+    return finalCompoundName
+    
+    #return "a1"
+    
+       
+    
+def isSameCompound(lipidionName1, lipidionName2, grade1, grade2, logger):
+    #extracting characters in lipidionName between ()
+    (prefix1, middle1, suffix1) = splitLipidionName(lipidionName1)
+    (prefix2, middle2, suffix2) = splitLipidionName(lipidionName2)
+    
+    logger.info("prefix1 = " + prefix1 + ", middle1 = " + middle1 + ", suffix1 = " + suffix1)
+    logger.info("prefix2 = " + prefix2 + ", middle2 = " + middle2 + ", suffix2 = " + suffix2)
+    
+    presufix1 = prefix1 + suffix1
+    presufix2 = prefix2 + suffix2
+    
+    flag1 = (presufix1 == presufix2)
+    
+    if(flag1 == True):
+        logger.info("prefix and suffix is the same %s" % presufix1)
+    else:
+        logger.info("prefix and suffix is not the same (%s, %s)" % (presufix1, presufix2))
+
+    c1 = middle1[0]
+    c2 = middle2[0]
+    
+    flag2 = False
+    if(c1 == c2 and isAlpha(c1)):
+        flag2 = True
+    if(flag2 == True):
+        logger.info("contains alpha %s in middle, and is the same" % c1)
+    else:
+        logger.info("middle is not the same")
+    
+    
+    (middlePrefix1, middleSuffix1) = splitMiddlerStr(middle1)
+    (middlePrefix2, middleSuffix2) = splitMiddlerStr(middle2)
+    
+    logger.info("middlePrefix1 = " + middlePrefix1 + ", middleSuffix1 = " + middleSuffix1)
+    logger.info("middlePrefix2 = " + middlePrefix2 + ", middleSuffix2 = " + middleSuffix2)
+    
+    
+    #flag2 is used to indicating whether middle str including 'd,e,p'
+    if(grade1 == grade2 and (grade1 == 'A' or grade1 == 'B') and flag2 == True):
+        logger.info("run here")
+        return lipidionName1 == lipidionName2
+    elif(grade1 == grade2 and (grade1 == 'A' or grade1 == 'B') and flag2 == False):
+        if(isMiddleSame(middlePrefix1, middleSuffix1, middlePrefix2, middleSuffix2) == True):
+            logger.info("===>middle is the same")
+            return True
+        else:
+            logger.info("===>middle is not the same")
+            return False
+    
+    
+        
+    
+    if(grade1 == grade2 and (grade1 == 'C' or grade1 == 'D')):
+        compound1 = mergeLipidionName(prefix1, middle1, suffix1)
+        compound2 = mergeLipidionName(prefix2, middle2, suffix2)
+        return compound1 == compound2
+    
+    
+    
+    
+    
+    return True        
+    
+
+def getFileList(path):
+    
+    finalPath = path + "./*.txt"
+    fileList = glob.glob(finalPath)
+    
+    return fileList
+    
+#这个函数返回一个dict，key是文件明，value是文件的内容，文件的内容又是一个dict，该dict的key是列的标题，value是该列对应的内容    
+def loadAllTextFile(dirName, logger):
+    fileList = getFileList(dirName)
+    allSampleDataBook = {}
+    for f in fileList:
+        currSampleData = loadTextFile(f, logger)
+        allSampleDataBook[f] = currSampleData 
+    
+    return allSampleDataBook
+    
+def getNumberStr(middle, logger):
+    
+    #check whether contains 'd, e, p'
+    slashIndex = middle.find('/')
+    flag1 = False
+    if(isAlpha(middle[0])):
+        flag1 = True
+    
+    flag2 = False
+    if(isAlpha(middle[slashIndex - 1])):
+        flag2 = True
+    finalMiddleStr = ""
+    if(flag1 == True and flag2 == False):
+        finalMiddleStr = middle[1:]
+    elif(flag1 == False and flag2 == True):
+        finalMiddleStr = middle[0:slashIndex - 1] + middle[slashIndex:]
+    else:
+        finalMiddleStr = middle
+        
+    logger.info("finalMiddleStr = " + finalMiddleStr)
+    #0:alpha is in middle[0]
+    #1: alpha is in middle[slashIndex -1]
+    #-1: no alpha in middle
+    if(flag1 == True and flag2 == False):
+        return (finalMiddleStr, 0)
+    elif(flag1 == False and flag2 == True):
+        return (finalMiddleStr, 1)
+    else:
+        return (finalMiddleStr, -1)
+    
+    
+   
+
+#获取每个化合物的所有grades值，看看每个化合物在不同的样品文件中的grade值是否既有A，B的值，也有C，D的值
+def getCompndNameAndGrades(dataBook, logger):
+    fileList = list(dataBook)
+    logger.info("Num = " + str(len(fileList)) + ", File list is = " + str(fileList))
+    
+    cfDict = {}
+    for f in fileList:
+        dataSheet = dataBook[f]
+        compndName = dataSheet[lipidCompndName]
+        grade = dataSheet[lipidGrade]
+        
+        for i in range(len(compndName)):
+            currCN = compndName[i]
+            currGrd = grade[i]
+            if(cfDict.has_key(currCN) == True):
+                cfDict[currCN].append(currGrd)
+            else:
+                cfDict[currCN] = [currGrd]
+                
+    
+    
+    return cfDict
+
+#获取每个化合物的Formula值
+def getCompndNameAndFormula(dataBook, logger):
+    fileList = list(dataBook)
+    logger.info("Num = " + str(len(fileList)) + ", File list is = " + str(fileList))
+    
+    cfDict = {}
+    for f in fileList:
+        dataSheet = dataBook[f]
+        compndName = dataSheet[lipidCompndName]
+        formula = dataSheet[lipidFormula]
+        
+        for i in range(len(compndName)):
+            currCN = compndName[i]
+            currFormula = formula[i]
+            if(cfDict.has_key(currCN) == True):
+                cfDict[currCN].append(currFormula)
+            else:
+                cfDict[currCN] = [currFormula]
+                
+    
+    
+    return cfDict
+
+#获取每个化合物的TopRT值
+def getCompndNameAndTopRT(dataBook, logger):
+    fileList = list(dataBook)
+    logger.info("Num = " + str(len(fileList)) + ", File list is = " + str(fileList))
+    
+    cfDict = {}
+    for f in fileList:
+        dataSheet = dataBook[f]
+        compndName = dataSheet[lipidCompndName]
+        formula = dataSheet[lipidTopRT]
+        
+        for i in range(len(compndName)):
+            currCN = compndName[i]
+            currFormula = formula[i]
+            if(cfDict.has_key(currCN) == True):
+                cfDict[currCN].append(currFormula)
+            else:
+                cfDict[currCN] = [currFormula]
+                
+    
+    
+    return cfDict
+
+#获取每个化合物的Formula值
+def getCompndNameAndSpecifyColumn(dataBook, columnName, logger):
+    fileList = list(dataBook)
+    logger.info("Num = " + str(len(fileList)) + ", File list is = " + str(fileList))
+    
+    ccDict = {}
+    for f in fileList:
+        dataSheet = dataBook[f]
+        compndName = dataSheet[lipidCompndName]
+        columnData = dataSheet[columnName]
+        
+        for i in range(len(compndName)):
+            currCN = compndName[i]
+            currColValue = columnData[i]
+            if(ccDict.has_key(currCN) == True):
+                #ccDict[currCN].append(currColValue)
+                #相同的value值不重复添加了
+                currValue = ccDict[currCN]
+                if(not (currColValue in currValue)):
+                    currValue.append(currColValue)
+            else:
+                ccDict[currCN] = [currColValue]
+                
+    
+    
+    return ccDict
+
+#检查一下化合物是否有包含grades值包含A/B，C/D的情况，目前来看给的数据集中并不包含       
+def checkIncludeABCD(cfDict, logger):
+    compndNames = list(cfDict)
+    for n in compndNames:
+        grades = cfDict[n]
+        
+        flagA = False
+        flagB = False
+        flagC = False
+        flagD = False
+        #for g in grades:
+        if( 'A' in grades):
+            flagA = True
+        if('B' in grades):
+            flagB = True
+        if('C' in grades):
+            flagC = True
+        if('D' in grades):
+            flagD = True
+    
+        flagAB = False
+        flagCD = False
+        
+        if(flagA == True or flagB == True):
+            flagAB = True
+        if(flagC == True or flagD == True):
+            flagCD = True
+            
+        if(flagAB == True and flagCD == True):
+            logger.info(n + ":" + str(grades))
+            
+            
+              
+        
+
+#得到所有文件中的满足条件的化合物，该化合物买足条件：对应的Rt值和TopRt值小于等于0.2
+def extractValidAllLipidIon(dataBook, logger):
+    
+    fileList = list(dataBook)
+    compndName = {}
+    for f in fileList:
+        dataSheet = dataBook[f]
+        lipidName = extractLipidIon(dataSheet, logger)
+        for n in lipidName:
+            compndName[n] = ""
+            
+    
+    #finalCompndName = list(compndName)
+    finalCompndName = compndName
+    return finalCompndName
+        
+def removeInvalidCompnds(compndDict, compndNames, logger):
+    
+    allCompndNames = list(compndDict)
+    
+    for c in allCompndNames:
+        if(compndNames.has_key(c) == False):
+            compndDict.pop(c)   
+        
+
+#检测一个dict中，每个key对应的value是不是只有一个值
+def check1(dictData, logger):
+    
+    for (k,v) in dictData.iteritems():
+        if(len(v) > 1):
+            logger.info("More than 1 values: key = " + k + ", value = " + str(v))
+ 
+
+#将dict中的value作为key，key作为value
+def reverseDict(dictData, logger):
+    
+    newDict = {}
+    for(k,v) in dictData.iteritems():
+        #做key，value互换的前提是原dict中过的value值只有1个，且value的类型是一个list
+        if(len(v) > 1):
+            logger.warning("When reverse dict, item in list is more than one")
+        v = str(v[0])
+        if(newDict.has_key(v)):
+            newDict[v].append(k)
+        else:
+            newDict[v] = [k]
+            
+    
+    return newDict
+
+#找出formula相同，但是对应的化合物列表中，括号内部只有2组数字对的
+def getTwoPairNumCompnd(dictData, logger):
+    
+    twoNumDict = {}
+    for(k,v) in dictData.iteritems():
+        if len(v) <= 1:
+            continue
+        
+        
+        for c in v:
+            result = re.findall(r':', c)
+            if(len(result) == 2):
+                if(twoNumDict.has_key(k)):
+                    twoNumDict[k].append(c)
+                else:
+                    twoNumDict[k] = [c]
+                    
+    
+    
+    printDict(twoNumDict)
+    
+    return twoNumDict
+
+#确定某个化合物的topRT值与平均是是否在0.25范围内，返回值为一个元组：
+#第一个返回值为Bool值，标记topRT的值是否在0.25范围内
+#第二个返回值为一个列表，保存不再0.25范围内的值
+def chkAndGetBeyondRangeData(data, logger):
+    avgResult = average(data)
+    
+    topRTRange = 0.25
+    isInRangeFlag = False
+    beyondRangeValue = []
+    for d in data:
+        if(math.fabs(float(d) - avgResult) <= topRTRange):
+            isInRangeFlag = True
+        else:
+            beyondRangeValue.append(d)
+            
+    
+    return (isInRangeFlag, beyondRangeValue)
+            
+
+#取出1个formula对应多个化合物的化合物取出来，同时将1个formula对应1个化合物的化合物也取出来
+def getCompndWithSameFormula(cfDict, logger):
+    
+    reverseCFDict = reverseDict(cfDict, logger)
+    compndUnNeedToCombinef = {}
+    
+    #这里的化合物需要被合并
+    compndNeedsToCombinef = {}
+    
+    for(k,v) in reverseCFDict.iteritems():
+        
+        if(len(v) == 1):
+            compndUnNeedToCombinef[v[0]] = ""
+            continue
+        
+        for item in v:
+            compndNeedsToCombinef[item] = ""
+            
+    
+    return (compndUnNeedToCombinef, compndNeedsToCombinef)
+        
+
+def average(data):
+    
+    data1 = []
+    
+    for d in data:
+        data1.append(float(d))
+    
+    if(len(data) != 0):
+        avgResult = sum(data1)/ len(data)
+    else:
+        avgResult = 0.0
+
+    
+    return avgResult    
+
+def getCompndInRange(dataDict, logger):
+    
+    needCombine = {}
+    unNeedCombine = {}
+    
+    topRTRange = 0.25
+    for(k,v) in dataDict.iteritems():
+        avg = average(v)
+        
+        for item in v:
+            diff = math.fabs(float(item) - avg)
+            if( diff <= topRTRange):
+                #needCombine[k] = ""
+                if(needCombine.has_key(k) == True):
+                    needCombine[k].append((float(item), avg, diff))
+                else:
+                    needCombine[k] = [(float(item), avg, diff)]
+            else:
+                #unNeedCombine[k] = ""
+                if(unNeedCombine.has_key(k) == True):
+                    unNeedCombine[k].append((float(item), avg, diff))
+                else:
+                    unNeedCombine[k] = [(float(item), avg, diff)]
+                    
+                    
+    
+    return (unNeedCombine, needCombine)
+                
+            
+
+
+
+            
+
+def getCompndNeedToCombine(cfDict, cTopRTDict, logger):
+    
+    cftDict = {}
+    topRange = 8.0
+    
+    reverseCFDict = reverseDict(cfDict, logger)
+    
+    for (k,vs) in reverseCFDict.iteritems():
+        for v in vs:
+            topRT = cTopRTDict[v]
+            #logger.info("topRT = " + str(topRT))
+            avgTopRT = average(topRT)
+            maxTopRT = max(topRT)
+            #logger.info("maxTopRT =" + str(maxTopRT))
+            if(float(maxTopRT) <= float(topRange)):
+                logger.info("maxTopRT = " + str(maxTopRT) + ", average = " + str(avgTopRT) + ", topRT = " + str(topRT))
+            if(float(maxTopRT) <= float(topRange)):
+                if(cftDict.has_key(k) == True):
+                    cftDict[k].append((v, topRT))
+                else:
+                    cftDict[k] = [(v, topRT)]
+                    
+    
+    
+    return cftDict
+            
+        
+                    
+        
+def getFinalNeedToCombine(dictF, dictT):
+    listF = list(dictF)
+    listT = list(dictT)
+    
+    sf = set(listF)
+    st = set(listT)
+    
+    needToCombine = sf & st
+    
+    return list(needToCombine)       
+
+
+#获取化合物括号部分数字对的个数。
+def getGroupNum(compndName):
+    
+    parenthesesPart = re.search('\(.*\)', compndName).group();   
+    #print("parenthesesPart = " + str(parenthesesPart))
+    semicolon = re.findall(':', str(parenthesesPart))  
+    
+    #print("semicolon = " + str(semicolon))    
+    
+    return len(semicolon)
+    
+    
+            
+def get2dot1CompndInfo(sameFormulaDict, cTopRTDict, logger):
+    
+    TopRTRange = 0.25
+    for(k,v) in sameFormulaDict.iteritems():
+        
+        if(cTopRTDict.has_key(k)):
+            topRTValues = cTopRTDict[k]
+        else:
+            topRTValues = []
+        
+        avg = average(topRTValues)
+        
+        if(avg)
+        
+        
+        
+      
+                     
+
+if __name__ == '__main__':
+
+    logger = MyLogger("Lipid-Logger", logging.INFO).getLogger()
+    #得到目录./lipddata下的所有文件的内容，以dict的形式组织，该dict的key是文件名，value是文件的内容，文件的内容又
+    #以dict的形式进行组织，key是对应文件中的每1列的标题，value是该列对应的内容
+    dataBook = loadAllTextFile("./lipiddata", logger)
+    
+    #得到所有文件中的满足条件的化合物，该化合物买足条件：对应的Rt值和TopRt值小于等于0.2
+    compndNames = extractValidAllLipidIon(dataBook, logger)
+    logger.info("Number of valid compndNames: " + str(len(compndNames)))    
+    
+    #取得每个化合物对应的grade值，key是化合物的名称，value是该化合物在所有文件中grade。
+    cgDict = getCompndNameAndSpecifyColumn(dataBook, lipidGrade, logger)
+    #printDict(cgDict)
+    #logger.info("Number of all compndNames:" + str(len(cgDict)))
+    
+    #从cgDict中将不在compndNames中的化合物删掉
+    removeInvalidCompnds(cgDict, compndNames, logger)
+    logger.info("Number of compndNames after removing:" + str(len(cgDict)))
+    
+    #cfDict = getCompndNameAndFormula(dataBook, logger)
+    #printDict(cfDict)
+    #取得每个化合物对应的formula值，key是化合物的名称，value是该化合物在所有文件中的formula
+    cfDict = getCompndNameAndSpecifyColumn(dataBook, lipidFormula, logger)
+    #reverseCFDict = reverseDict(cfDict, logger)
+    #printDict(reverseCFDict)
+#     getTwoPairNumCompnd(reverseCFDict, logger)
+    #check1(cfDict, logger)
+#     将cfDict中不再compndName中的化合物删掉
+    removeInvalidCompnds(cfDict, compndNames, logger)
+    #printDict(cfDict)
+    logger.info("Number of all compndNames in cfDict:" + str(len(cfDict)))
+    
+    cTopRTDict = getCompndNameAndSpecifyColumn(dataBook, lipidTopRT, logger)    
+    removeInvalidCompnds(cTopRTDict, compndNames, logger)
+    #printDict(cTopRTDict)
+    logger.info("Number of all compndNames in cTopRTDict:" + str(len(cTopRTDict)))
+    
+    
+    #compndNeedToCombine = getCompndNeedToCombine(cfDict, cTopRTDict, logger)
+    #printDict(compndNeedToCombine)
+    
+    (unNeedCombinef, needCombinef) = getCompndWithSameFormula(cfDict, logger)
+    
+    logger.info("len of cfDict = " + str(len(cfDict)))
+    logger.info("len of needCombine = " + str(len(needCombinef)))
+    logger.info("len of unNeedCombine = " + str(len(unNeedCombinef)))
+    
+    #取得在所有文件中的TopRT的平均值在0.25范围内的化合物。
+    (unNeedCombineT, needCombineT) = getCompndInRange(cTopRTDict, logger)
+    
+    finalNeedToCombine = getFinalNeedToCombine(needCombinef, needCombineT)
+    
+    print("len of need to combineT = %d" % len(needCombineT))
+    print("len of unneed to combineT = %d" % len(unNeedCombineT))
+    
+    print("final need to combine[%d:%s] " % (len(finalNeedToCombine),  str(finalNeedToCombine)))
+    
+    finalNeedToCombine.sort(cmp=None, key=None, reverse=False)
+    
+#     for item in finalNeedToCombine:
+#         print(item)
+    
+    
+    
+    
+    
+    #printDict(unNeedCombineT)
+    #printDict(needCombineT)
+    
+    
+    
+    
+#     checkIncludeABCD(cfDict, logger)
+    
+    
+    
+    #printDict(cfDict)
+#     dataDict = loadTextFile("sample.txt", logger)
+#     extractLipidIon(dataDict, logger)
+
+#     flag = isSameCompound("Cer(d18:1/16:0)+H", "Cer(d16:0/18:1)+H", "C", "C", logger)
+#     if(flag == True):
+#         logger.info("compound is the same")
+#     else:
+#         logger.info("compound is not the same")
+#         
+#     
+#     flag = isSameCompound("Cer(18:1/16:0)+H", "Cer(16:0/18:1)+H", "C", "C", logger)
+#     if(flag == True):
+#         logger.info("compound is the same")
+#     else:
+#         logger.info("compound is not the same")
+
+#     (finalMiddle, flag) = getNumberStr("18:1p/16:0", logger)
+#     (finalMiddle, flag) = getNumberStr("e15:1/16:0", logger)
+#     (finalMiddle, flag) = getNumberStr("19:1/16:0", logger)
+    
+#     fileList = getFileList("./lipiddata/")
+#     logger.info("File List = " + str(fileList))
+#     dataDict = loadTextFile(fileList[0], logger)
+#     extractLipidIon(dataDict, logger)
+    pass

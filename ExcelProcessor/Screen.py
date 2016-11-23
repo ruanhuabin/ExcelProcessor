@@ -178,7 +178,7 @@ def genLibraryScoreColumn(screenDataBook, compoundNames, newScreenBook, logger):
             lsFinalValue = lsInfo[0]
             
         #print currCPName, ":", lsInfo
-        logger.debug("currCPName: [%s], lsInfo : [%s]" % (str(currCPName), str(lsInfo)))
+        #logger.debug("currCPName: [%s], lsInfo : [%s]" % (str(currCPName), str(lsInfo)))
         
         lsFinalInfo.append(lsFinalValue)
     
