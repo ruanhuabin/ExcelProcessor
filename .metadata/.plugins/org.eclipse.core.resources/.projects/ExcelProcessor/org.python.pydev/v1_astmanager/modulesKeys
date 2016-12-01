@@ -1,4 +1,5 @@
 MODULES_MANAGER_V2
+LipidIonProcessor|D:\workspace-excelprocess-final\ExcelProcessor\LipidIonProcessor.py
 Logger|D:\workspace-excelprocess-final\ExcelProcessor\Logger.py
 Quan|D:\workspace-excelprocess-final\ExcelProcessor\Quan.py
 QuanProcessorGUI|D:\workspace-excelprocess-final\ExcelProcessor\QuanProcessorGUI.py
@@ -7,4 +8,5 @@ ScreenProcessorGUI|D:\workspace-excelprocess-final\ExcelProcessor\ScreenProcesso
 Test|D:\workspace-excelprocess-final\ExcelProcessor\Test.py
 constant|D:\workspace-excelprocess-final\ExcelProcessor\constant.py
 lipid|D:\workspace-excelprocess-final\ExcelProcessor\lipid.py
+lipid2|D:\workspace-excelprocess-final\ExcelProcessor\lipid2.py
 util|D:\workspace-excelprocess-final\ExcelProcessor\util.py

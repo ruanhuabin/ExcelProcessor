@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pydev-testrun version="1.0"?><pydev-testsuite>
+<summary errors="1" failures="0" finished="true" name="Test Run: 0" tests="0" total_time="Finished in: 0.00 secs."/>
+<test location="D:\workspace-excelprocess-final\ExcelProcessor\MyUnitTest.py" status="error" test="MyUnitTest" time="0">
+<stdout/>
+<stderr><![CDATA[Traceback (most recent call last):
+  File "C:\Users\ruanhuabin\.p2\pool\plugins\org.python.pydev_5.2.0.201608171824\pysrc\_pydev_runfiles\pydev_runfiles.py", line 468, in __get_module_from_str
+    mod = __import__(modname)
+  File "D:\workspace-excelprocess-final\ExcelProcessor\MyUnitTest.py", line 2
+SyntaxError: Non-ASCII character '\xc4' in file D:\workspace-excelprocess-final\ExcelProcessor\MyUnitTest.py on line 3, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+ERROR: Module: MyUnitTest could not be imported (file: D:\workspace-excelprocess-final\ExcelProcessor\MyUnitTest.py).
+]]></stderr>
+</test>
+<launch mode="run">
+<launch_memento><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration local="true" path="ExcelProcessor MyUnitTest.py"/>
+]]></launch_memento>
+</launch>
+</pydev-testsuite>

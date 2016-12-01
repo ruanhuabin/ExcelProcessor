@@ -1,0 +1,54 @@
+# encoding: utf-8
+from Logger import MyLogger
+import logging
+
+logger = MyLogger("Lipid-Logger", logging.INFO).getLogger()
+
+def makeTestData():
+    dataBook = {}
+    fileBook1 = {}
+    fileBook2 = {}
+    
+    
+    fileBook1["LipidIon"] = ["ChE(18:3)+H", "ChE(20:5)+NH4", "ChE(20:5)+H", "ChE(22:4)+NH4"]
+    fileBook1["Rt"] = ["10.1", "10.2", "10.3","10.4"]
+    fileBook1["TopRT"] = ["10.25", "10.42", "10.45", "10.88"]
+    fileBook1["Formula"] = ["fm1", "fm2", "fm2", "fm2"]
+    fileBook1["Grade"] = ["A", "A", "B", "B"]
+    
+    fileBook2["LipidIon"] = ["NE(18:3)+H", "ChE(20:5)+NH4", "NE(20:5)+H", "ChE(22:4)+NH4"]
+    fileBook2["Rt"] = ["10.1", "10.2", "10.3","10.4"]
+    fileBook2["TopRT"] = ["10.25", "10.42", "10.45", "10.88"]
+    fileBook2["Formula"] = ["fm1", "fm2", "fm2", "fm2"]
+    fileBook2["Grade"] = ["A", "D", "C", "D"]
+    
+    dataBook["f1"] = fileBook1;
+    dataBook["f2"] = fileBook2;
+    
+    
+    return dataBook        
+        
+def makeTuple(dataBook):
+    logger.info("Start to make databook as tuple list")
+    
+    
+    lipidInfo = []
+    
+    
+    files = list(dataBook)
+    for f in files:
+        fileData = dataBook[f]
+        lipidIon = fileData["LipidIon"]
+        
+    logger.info("End to make databook as tuple list")     
+                     
+
+if __name__ == '__main__':
+
+    
+    #得到目录./lipddata下的所有文件的内容，以dict的形式组织，该dict的key是文件名，value是文件的内容，文件的内容又
+    #以dict的形式进行组织，key是对应文件中的每1列的标题，value是该列对应的内容
+    #dataBook = loadAllTextFile("./lipiddata", logger)
+    dataBook = makeTestData()
+    makeTuple(dataBook)
+    pass

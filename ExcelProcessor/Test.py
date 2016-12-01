@@ -15,7 +15,7 @@ print data
 
 dataList = sorted(data.iteritems(),key=operator.itemgetter(1,0),reverse=True)
 
-print dataList
+print "datalist= " + str(dataList)
 
 
 table = {}
@@ -101,10 +101,99 @@ def getGroupNum2(compndName):
     return len(semicolon)
             
 
+def reduceName(lipidName):
+    alpha = ' dep'
+    parenthesesPart = re.search(r'(\(.*\))', lipidName).group()
+    parenthesesPart = parenthesesPart[1:-1] 
+    
+    print("parenthesesPart = " + parenthesesPart)
+    
+    elems = re.split(':|/|e|d|p|\+', parenthesesPart)
+    
+    
+    
+    print("elems = " + str(elems))
+    
+    elems = [item for item in elems if item != '']
+    print("after remove, elems = " + str(elems))
+    
+    reduceParePart = str(int(elems[0]) + int(elems[2])) + ":" + str(int(elems[1]) + int(elems[3]))
+    print("reduceParePart = " + reduceParePart)
+    
+    flag = ''
+    for i in range(1, len(alpha)):
+        index = parenthesesPart.find(alpha[i])
+        print("index = " + str(index))
+        if(index != -1):
+            flag = alpha[i]
+            print("flag = "+ flag)
+            break
+            
+    reduceParePart = reduceParePart + flag
+    print("new reduceParePart = " + reduceParePart)
+    
+    if(len(elems) == 5):
+        reduceParePart = reduceParePart + "+" +  elems[-1]
+        
+    print("final reduceParePart = " + reduceParePart)
+        
+    p1 = lipidName.find('(')
+    p2 = lipidName.find(')')
+    
+    newLipidName = lipidName[0:p1+1] + reduceParePart + lipidName[p2:]
+    
+    print("final lipid name = " + newLipidName)
+    
+
+def isAllABCD(grades):
+    flagAB = False
+    flagCD = False
+    
+    for g in grades:
+        if(g == 'A' or g == 'B'):
+            flagAB = True;
+            break
+    
+    for g in grades:
+        if(g == 'C' or g == 'D'):
+            flagCD = True;
+            break
+        
+    if(flagAB and flagCD):
+        return True
+    else:
+        return False   
+
+def isAllAB(grades):
+    flag = True
+    
+    for g in grades:
+        if(g != 'A' and g != 'B'):
+            flag = False
+            break
+    
+    return flag
+
+def isAllCD(grades):
+    flag = True
+    
+    for g in grades:
+        if(g != 'C' and g != 'D'):
+            flag = False
+            break
+    
+    return flag
+
 if __name__ == '__main__':
     
-   num =  getGroupNum('TG(9:0/9:0/19:4)+NH4')
-   print("num = " + str(num))
+    
+    grades = ['C', 'A', 'C']
+    
+    flag = isAllCD(grades)
+
+    print("flag =" + str(flag))
+#     num =  getGroupNum('TG(9:0/9:0/19:4)+NH4')
+#     print("num = " + str(num))
     
 #     dictData3 = {}
 #     dictData3["a"] = ["va"]
