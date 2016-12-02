@@ -9,6 +9,8 @@ import pprint
 logger = MyLogger("Lipid-Logger", logging.INFO).getLogger()
 ms2Window = 0.2
 topRTRange = 0.25
+#保存合并后的名字与原始名字的映射
+lipidAlias = {}
 
 def makeTestData():
     dataBook = {}
@@ -27,12 +29,14 @@ def makeTestData():
     fileBook1["TopRT"] = ["10.25", "10.42", "10.45", "10.88", "11.64"]
     fileBook1["Formula"] = ["fm1", "fm2", "fm2", "fm2", "fm2"]
     fileBook1["Grade"] = ["A", "A", "B", "B", "D"]
+    fileBook1["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5"]
     
     fileBook2["LipidIon"] = ["NE(18:3)+H", "ChE(20:5)+NH4", "NE(20:5)+H", "ChE(22:4)+NH4", "ChE(20:5)+H"]
     fileBook2["Rt"] = ["10.1", "10.2", "10.3","10.4", "10.4"]
     fileBook2["TopRT"] = ["10.25", "10.42", "10.45", "10.92", "10.55"]
     fileBook2["Formula"] = ["fm1", "fm2", "fm2", "fm2", "fm2"]
     fileBook2["Grade"] = ["A", "D", "C", "D", "B"]
+    fileBook2["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5"]
     
     
     fileBook3["LipidIon"] = ["TG(4:0/16:0/22:5)+NH4", "TG(4:0/22:5/16:0)+NH4", "DG(16:0/4:0/22:5)+NH4", "DG(4:0/16:0/22:5)+NH4", "TG(4:0/16:0/28:4)+NH4"]
@@ -40,18 +44,21 @@ def makeTestData():
     fileBook3["TopRT"] = ["10.1", "10.2", "10.3", "10.4", "10.5"]
     fileBook3["Formula"] = ["fm2", "fm2", "fm2", "fm2", "fm2"]
     fileBook3["Grade"] = ["A", "D", "C", "D", "B"]
+    fileBook3["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5"]
     
     fileBook4["LipidIon"] = ["PC(16:0e/22:5)+NH4", "PC(22:5/16:0e)+NH4", "SM(16:0/4:0p)+NH4", "SM(4:0p/16:0)+NH4", "PC(d16:0/28:4+O)+NH4", "SM(16:0/4:0p)+NH4"]
     fileBook4["Rt"] = ["10.1", "10.2", "10.3","10.4", "10.5", "10.8"]
     fileBook4["TopRT"] = ["10.1", "10.2", "10.3", "10.4", "10.5", "10.8"]
     fileBook4["Formula"] = ["fm3", "fm3", "fm3", "fm3", "fm3", "fm3"]
     fileBook4["Grade"] = ["A", "D", "C", "D", "B", "A"]
+    fileBook4["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5", "OM6"]
     
     fileBook5["LipidIon"] = ["Cer(16:0e/22:5)+NH4", "Cer(22:5e/16:0)+NH4", "phSM(16:0/4:0p)+NH4", "phSM(4:0p/16:0)+NH4", "Cer(16:0e/22:5)+NH4", "phSM(16:0/4:0p)+NH4", "phSM(16:0/4:0p)+NH4"]
     fileBook5["Rt"] = ["10.1", "10.2", "10.3","10.4", "10.5", "10.8", "10.4"]
     fileBook5["TopRT"] = ["10.1", "10.2", "10.3", "10.4", "10.5", "10.8", "10.4"]
     fileBook5["Formula"] = ["fm5", "fm5", "fm5", "fm5", "fm5", "fm5", "fm5"]
     fileBook5["Grade"] = ["A", "B", "B", "A", "B", "A", "B"]
+    fileBook5["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5", "OM6", "OM7"]
     
     #注意：不可能出现两盒化合物名称相同，但是formula不同的情况，在构造测试数据的时候特别注意
     fileBook6["LipidIon"] = ["CerG1(16:0e/22:5)+NH4", "CerG1(22:5e/16:0)+NH4", "phSMG2(16:0/4:0p)+NH4", "phSMG2(4:0p/16:0)+NH4", "CerG1(16:0e/22:5)+NH4", "phSMG2(16:0/4:0p)+NH4", "phSMG2(16:0/4:0p)+NH4"]
@@ -59,6 +66,7 @@ def makeTestData():
     fileBook6["TopRT"] = ["10.1", "10.2", "10.3", "10.4", "10.5", "10.8", "10.4"]
     fileBook6["Formula"] = ["fm6", "fm6", "fm6", "fm6", "fm6", "fm6", "fm6"]
     fileBook6["Grade"] = ["C", "D", "D", "C", "D", "C", "D"]
+    fileBook6["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5", "OM6", "OM7"]
     
     
     fileBook7["LipidIon"] = ["CerG2(16:0e/22:5)+NH4", "CerG2(22:5e/16:0)+NH4", "phSMG3(16:0/4:0p)+NH4", "phSMG3(4:0p/16:0)+NH4", "CerG2(16:0e/22:5)+NH4", "phSMG3(16:0/4:0p)+NH4", "phSMG3(4:0p/16:0)+NH4"]
@@ -66,6 +74,7 @@ def makeTestData():
     fileBook7["TopRT"] = ["10.1", "10.2", "10.3", "10.4", "10.5", "10.8", "10.4"]
     fileBook7["Formula"] = ["fm7", "fm7", "fm7", "fm7", "fm7", "fm7", "fm7"]
     fileBook7["Grade"] = ["A", "D", "D", "C", "C", "B", "A"]
+    fileBook7["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5", "OM6", "OM7"]
     
     
     dataBook["f1"] = fileBook1;
@@ -91,18 +100,20 @@ def makeTuple(dataBook):
         TopRTs = fileData["TopRT"]
         Formulas = fileData["Formula"]
         Grades = fileData["Grade"]
+        ObsMz = fileData["ObsMz"]
         
         logger.info("lipidIons:" + str(lipidIons)) 
         logger.info("Rts:" + str(Rts))
         logger.info("TopRTs:" + str(TopRTs))
         logger.info("Formulas:" + str(Formulas))
         logger.info("Grades:" + str(Grades))
+        logger.info("obsMz:" + str(ObsMz))
         logger.info("--------------------------------------------------------------")
         
         columnDataSize = len(lipidIons)
         for i in range(columnDataSize):
             diff = math.fabs(float(Rts[i]) - float(TopRTs[i]))
-            li = (lipidIons[i], Rts[i], TopRTs[i], diff, Formulas[i], Grades[i])
+            li = (lipidIons[i], Rts[i], TopRTs[i], diff, Formulas[i], Grades[i], ObsMz[i])
             lipidInfo.append(li)
     
     #lipidInfo = sorted(lipidInfo,key=operator.itemgetter(3,0),reverse=False)            
@@ -153,7 +164,10 @@ def calTopRTAvg(lipidInfo):
 def getFormulaMap(lipidInfo):
     
     logger.info("Start to get lipid names with same formula")
+    #保存f->c的映射
     f2c = {}
+    #保存c->f的映射
+    c2f = {}
     
     
     
@@ -165,10 +179,37 @@ def getFormulaMap(lipidInfo):
             f2c[formula].add(lipidName)            
         else:
             f2c[formula] = set([lipidName])
+        
+        if(c2f.has_key(lipidName)):
+            c2f[lipidName].add(formula)
+        else:
+            c2f[lipidName] = set([formula])
             
     
     logger.info("end to get lipid names with same formula")
-    return f2c
+    return (f2c,c2f)
+
+def getObsMZMap(lipidInfo):
+    
+    logger.info("Start to get lipid name mapping to obsmz info")
+    #保存c->f的映射
+    c2om = {}
+    
+    
+    
+    for item in lipidInfo:
+        obsMZ = item[6]
+        lipidName = item[0]
+       
+        
+        if(c2om.has_key(lipidName)):
+            c2om[lipidName].add(obsMZ)
+        else:
+            c2om[lipidName] = set([obsMZ])
+            
+    
+    logger.info("End to get lipid name mapping to obsmz info")
+    return c2om
                
 #获取化合物括号部分数字对的个数。
 def getGroupNum(compndName):
@@ -242,6 +283,13 @@ def renameLipid(lipidName):
     newPare = "(" + newPare + ")"
     suffix = lipidName[lipidName.find(')') + 1:]
     newLipidName = prefix + newPare + suffix
+    
+    
+    #只要被调用一次，就需要保存一次新名字到原始名字的映射
+    if(lipidAlias.has_key(newLipidName)):
+        lipidAlias[newLipidName].add(lipidName)
+    else:
+        lipidAlias[newLipidName] = set([lipidName])
     
     return newLipidName
       
@@ -362,6 +410,15 @@ def reduceName(lipidName):
     p2 = lipidName.find(')')
     
     newLipidName = lipidName[0:p1+1] + reduceParePart + lipidName[p2:]
+    
+    
+    #只要被调用一次，就需要保存一次新名字到原始名字的映射
+    if(lipidAlias.has_key(newLipidName)):
+        lipidAlias[newLipidName].add(lipidName)
+    else:
+        lipidAlias[newLipidName] = set([lipidName])
+    
+    
     
     return newLipidName
 
@@ -711,6 +768,12 @@ def genFullName(newLipidName, aliasNames):
     partFullName = aliasList[0] + "/"    
     newFullName = partFullName + newLipidName 
     
+    #只要被调用一次，就需要保存一次新名字到原始名字的映射
+    if(lipidAlias.has_key(newFullName)):
+        lipidAlias[newFullName].add(aliasList[0])
+    else:
+        lipidAlias[newFullName] = set([aliasList[0]])
+    
     return newFullName
 
 
@@ -767,6 +830,40 @@ def p2dot4c(f2c, c2TopRTAvg, c2TopRT, c2Grade):
   
     return vldLipidInfo      
 
+def combineLipidInfo(lipidInfoIn2dot1, lipidInfoIn2dot2, lipidInfoIn2dot3, lipidInfoIn2dot4a, lipidInfoIn2dot4b, lipidInfoIn2dot4c, c2f, c2om):
+    finalLipidInfo = []
+    
+    print("keys of c2f:" + str(list(c2f)))
+    print("keys of lipidAlias:" + str(list(lipidAlias)))
+    
+    allPairs = lipidInfoIn2dot1 + lipidInfoIn2dot2 + lipidInfoIn2dot3 + lipidInfoIn2dot4a + lipidInfoIn2dot4b + lipidInfoIn2dot4c
+    
+    for item in allPairs:
+        lipidName = item[0]
+        topRTAvg = item[1]
+        
+        origLipidName = item[0]
+        if(lipidAlias.has_key(lipidName)):
+            origLipidName = list(lipidAlias[lipidName])[0]
+        
+        
+        
+        formula = c2f[origLipidName]
+        obsMz = c2om[origLipidName]
+        
+        lipidFinalItem = (lipidName, formula, obsMz, topRTAvg)
+        finalLipidInfo.append(lipidFinalItem)
+        
+    
+    return finalLipidInfo
+        
+        
+        
+        
+    
+    return finalLipidInfo
+    
+
 
     
 if __name__ == '__main__':
@@ -783,8 +880,9 @@ if __name__ == '__main__':
     
     (c2TopRTAvg, c2TopRT) = calTopRTAvg(lipidInfo)
     
-    f2c = getFormulaMap(lipidInfo)
+    (f2c,c2f) = getFormulaMap(lipidInfo)
     logger.info("lipid name with same formula: " + str(f2c))
+    logger.info("lipid name to formula mapping: " + str(c2f))
     
     c2Grade = getGradeMap(lipidInfo)
     logger.info("c2Grade = " + str(c2Grade))
@@ -812,6 +910,16 @@ if __name__ == '__main__':
     
     lipidInfoIn2dot4c = p2dot4c(f2c, c2TopRTAvg, c2TopRT, c2Grade)
     logger.info("lipidInfoIn2dot4c: " + str(lipidInfoIn2dot4c))
+    
+    
+    c2om = getObsMZMap(lipidInfo)
+    #将上面所有lipidInfo[num]dot[num]的化合物归并到一起，list中的每个元素是一个元组(lipidName, formula, ObsMZ, TopRT ...)
+    finalLipidInfo = combineLipidInfo(lipidInfoIn2dot1, lipidInfoIn2dot2, lipidInfoIn2dot3, lipidInfoIn2dot4a, lipidInfoIn2dot4b, lipidInfoIn2dot4c, c2f, c2om)
+    
+    pprint.pprint(finalLipidInfo)
+    
+    
+    
     
     
     

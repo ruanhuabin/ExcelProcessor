@@ -4,7 +4,7 @@ D:\workspace-excelprocess-final\.metadata\.plugins\org.eclipse.core.resources\.p
 constant|1477640742758943000|D:\workspace-excelprocess-final\ExcelProcessor\constant.py
 lipid2|1480406280840525000|D:\workspace-excelprocess-final\ExcelProcessor\lipid2.py
 util|1474184225911258000|D:\workspace-excelprocess-final\ExcelProcessor\util.py
-Test|1480497950747082000|D:\workspace-excelprocess-final\ExcelProcessor\Test.py
+Test|1480666748916753000|D:\workspace-excelprocess-final\ExcelProcessor\Test.py
 Screen|1476157291869967000|D:\workspace-excelprocess-final\ExcelProcessor\Screen.py
 Quan|1474169046656086000|D:\workspace-excelprocess-final\ExcelProcessor\Quan.py
 ScreenProcessorGUI|1474185022930888000|D:\workspace-excelprocess-final\ExcelProcessor\ScreenProcessorGUI.py
@@ -35,13 +35,14 @@ lipid|1480405846134725000|D:\workspace-excelprocess-final\ExcelProcessor\lipid.p
 9=QuanProcessorGUI
 -- END DICTIONARY
 -- START TREE 1
-76
+81
 a|1|a!11@
 add|2|addValueToDict!10@adductTitle!19@
 all|1|allc!27@
 ave|3|average!11@average!34@average!26@
 b|1|b!11@
 c2g|0|
+c2o|0|
 c5c|1|c5c4data!11@
 cal|0|
 cfd|2|cfDict!35@cfDict!27@
@@ -71,6 +72,10 @@ isa|6|isAllABCD!10@isAllAB!10@isAllCD!10@isAllNA!42@isAlpha!26@isAlpha!34@
 isc|1|isContainPass!42@
 ism|2|isMiddleSame!26@isMiddleSame!34@
 iss|3|isSameCompound!26@isSameCompound!34@isSheetInList!42@
+l1|1|l1!11@
+l2|1|l2!11@
+l3|1|l3!11@
+l4|1|l4!11@
 lib|1|libraryScoreTitle!19@
 lip|4|lipidFormula!19@lipidCompndName!19@lipidTopRT!19@lipidGrade!19@
 loa|6|loadData!42@loadAllTextFile!34@loadTextFile!26@loadData!58@loadAllTextFile!26@loadTextFile!34@

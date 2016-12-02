@@ -192,6 +192,16 @@ if __name__ == '__main__':
     flag = isAllCD(grades)
 
     print("flag =" + str(flag))
+    
+    
+    l1 = [1,2,3]
+    l2 = [4,5,6]
+    l3 = [(7,8),9]
+    
+    l4 = l1 + l2 + l3 
+    
+    print(l4)
+    
 #     num =  getGroupNum('TG(9:0/9:0/19:4)+NH4')
 #     print("num = " + str(num))
     
