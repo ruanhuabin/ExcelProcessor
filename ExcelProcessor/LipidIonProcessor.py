@@ -30,6 +30,7 @@ def makeTestData():
     fileBook1["Formula"] = ["fm1", "fm2", "fm2", "fm2", "fm2"]
     fileBook1["Grade"] = ["A", "A", "B", "B", "D"]
     fileBook1["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5"]
+    fileBook1["Area"] = ["Area1", "Area2", "Area3", "Area4", "Area5"]
     
     fileBook2["LipidIon"] = ["NE(18:3)+H", "ChE(20:5)+NH4", "NE(20:5)+H", "ChE(22:4)+NH4", "ChE(20:5)+H"]
     fileBook2["Rt"] = ["10.1", "10.2", "10.3","10.4", "10.4"]
@@ -37,6 +38,7 @@ def makeTestData():
     fileBook2["Formula"] = ["fm1", "fm2", "fm2", "fm2", "fm2"]
     fileBook2["Grade"] = ["A", "D", "C", "D", "B"]
     fileBook2["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5"]
+    fileBook2["Area"] = ["Area1", "Area2", "Area3", "Area4", "Area5"]
     
     
     fileBook3["LipidIon"] = ["TG(4:0/16:0/22:5)+NH4", "TG(4:0/22:5/16:0)+NH4", "DG(16:0/4:0/22:5)+NH4", "DG(4:0/16:0/22:5)+NH4", "TG(4:0/16:0/28:4)+NH4"]
@@ -45,6 +47,7 @@ def makeTestData():
     fileBook3["Formula"] = ["fm2", "fm2", "fm2", "fm2", "fm2"]
     fileBook3["Grade"] = ["A", "D", "C", "D", "B"]
     fileBook3["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5"]
+    fileBook3["Area"] = ["Area1", "Area2", "Area3", "Area4", "Area5"]
     
     fileBook4["LipidIon"] = ["PC(16:0e/22:5)+NH4", "PC(22:5/16:0e)+NH4", "SM(16:0/4:0p)+NH4", "SM(4:0p/16:0)+NH4", "PC(d16:0/28:4+O)+NH4", "SM(16:0/4:0p)+NH4"]
     fileBook4["Rt"] = ["10.1", "10.2", "10.3","10.4", "10.5", "10.8"]
@@ -52,6 +55,7 @@ def makeTestData():
     fileBook4["Formula"] = ["fm3", "fm3", "fm3", "fm3", "fm3", "fm3"]
     fileBook4["Grade"] = ["A", "D", "C", "D", "B", "A"]
     fileBook4["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5", "OM6"]
+    fileBook4["Area"] = ["Area1", "Area2", "Area3", "Area4", "Area5", "Area6"]
     
     fileBook5["LipidIon"] = ["Cer(16:0e/22:5)+NH4", "Cer(22:5e/16:0)+NH4", "phSM(16:0/4:0p)+NH4", "phSM(4:0p/16:0)+NH4", "Cer(16:0e/22:5)+NH4", "phSM(16:0/4:0p)+NH4", "phSM(16:0/4:0p)+NH4"]
     fileBook5["Rt"] = ["10.1", "10.2", "10.3","10.4", "10.5", "10.8", "10.4"]
@@ -59,6 +63,7 @@ def makeTestData():
     fileBook5["Formula"] = ["fm5", "fm5", "fm5", "fm5", "fm5", "fm5", "fm5"]
     fileBook5["Grade"] = ["A", "B", "B", "A", "B", "A", "B"]
     fileBook5["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5", "OM6", "OM7"]
+    fileBook5["Area"] = ["Area1", "Area2", "Area3", "Area4", "Area5", "Area6", "Area7"]
     
     #注意：不可能出现两盒化合物名称相同，但是formula不同的情况，在构造测试数据的时候特别注意
     fileBook6["LipidIon"] = ["CerG1(16:0e/22:5)+NH4", "CerG1(22:5e/16:0)+NH4", "phSMG2(16:0/4:0p)+NH4", "phSMG2(4:0p/16:0)+NH4", "CerG1(16:0e/22:5)+NH4", "phSMG2(16:0/4:0p)+NH4", "phSMG2(16:0/4:0p)+NH4"]
@@ -67,6 +72,7 @@ def makeTestData():
     fileBook6["Formula"] = ["fm6", "fm6", "fm6", "fm6", "fm6", "fm6", "fm6"]
     fileBook6["Grade"] = ["C", "D", "D", "C", "D", "C", "D"]
     fileBook6["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5", "OM6", "OM7"]
+    fileBook6["Area"] = ["Area1", "Area2", "Area3", "Area4", "Area5", "Area6", "Area7"]
     
     
     fileBook7["LipidIon"] = ["CerG2(16:0e/22:5)+NH4", "CerG2(22:5e/16:0)+NH4", "phSMG3(16:0/4:0p)+NH4", "phSMG3(4:0p/16:0)+NH4", "CerG2(16:0e/22:5)+NH4", "phSMG3(16:0/4:0p)+NH4", "phSMG3(4:0p/16:0)+NH4"]
@@ -75,6 +81,7 @@ def makeTestData():
     fileBook7["Formula"] = ["fm7", "fm7", "fm7", "fm7", "fm7", "fm7", "fm7"]
     fileBook7["Grade"] = ["A", "D", "D", "C", "C", "B", "A"]
     fileBook7["ObsMz"] = ["OM1", "OM2", "OM3", "OM4", "OM5", "OM6", "OM7"]
+    fileBook7["Area"] = ["Area1", "Area2", "Area3", "Area4", "Area5", "Area6", "Area7"]
     
     
     dataBook["f1"] = fileBook1;
@@ -101,6 +108,7 @@ def makeTuple(dataBook):
         Formulas = fileData["Formula"]
         Grades = fileData["Grade"]
         ObsMz = fileData["ObsMz"]
+        Area = fileData["Area"]
         
         logger.info("lipidIons:" + str(lipidIons)) 
         logger.info("Rts:" + str(Rts))
@@ -113,7 +121,7 @@ def makeTuple(dataBook):
         columnDataSize = len(lipidIons)
         for i in range(columnDataSize):
             diff = math.fabs(float(Rts[i]) - float(TopRTs[i]))
-            li = (lipidIons[i], Rts[i], TopRTs[i], diff, Formulas[i], Grades[i], ObsMz[i])
+            li = (lipidIons[i], Rts[i], TopRTs[i], diff, Formulas[i], Grades[i], ObsMz[i], Area[i],f)
             lipidInfo.append(li)
     
     #lipidInfo = sorted(lipidInfo,key=operator.itemgetter(3,0),reverse=False)            
@@ -193,10 +201,7 @@ def getObsMZMap(lipidInfo):
     
     logger.info("Start to get lipid name mapping to obsmz info")
     #保存c->f的映射
-    c2om = {}
-    
-    
-    
+    c2om = {}    
     for item in lipidInfo:
         obsMZ = item[6]
         lipidName = item[0]
@@ -862,8 +867,157 @@ def combineLipidInfo(lipidInfoIn2dot1, lipidInfoIn2dot2, lipidInfoIn2dot3, lipid
         
     
     return finalLipidInfo
+
+def getAreaMap(lipidInfo):
+    logger.info("Start to get lipid name mapping to area info")
+    
+    c2AreaList = []  
+    for item in lipidInfo:
+        area = item[7]
+        lipidName = item[0]
+        fileName = item[-1]
+       
+        c2AreaList.append((lipidName, fileName, area))
+        for item2 in lipidInfo:
+            lipidName2 = item2[0]
+            if(lipidName != lipidName2):
+                continue
+             
+            fileName2 = item[-1]
+            area2 = item[7]
+             
+            if(fileName != fileName2):
+                c2AreaList.append((lipidName, fileName2, area2))
+            
+            if(fileName == fileName2 and area != area2):
+                c2AreaList.append((lipidName, fileName2, area2))
+            
+            
+            
+#         areaInfo = {}
+#          
+#         #currKey = (lipidName, fileName)
+#         currKey = fileName
+#         if(areaInfo.has_key(currKey)):
+#             #areaInfo[currKey].append((fileName, area))
+#             areaInfo[currKey].append(area)
+#         else:
+#             #areaInfo[currKey] = [(fileName, area)]
+#             areaInfo[currKey] = [area]
+#              
+#         c2Area[lipidName] = areaInfo
+    
+    #convert c2AreaList to c2AreaMap
+    
+    c2AreaMap = {}
+    for item in c2AreaList:
+        lipidName = item[0]
+        fileName = item[1]
+        area = item[2]
+        
+        key = (lipidName, fileName)
+        
+        if(c2AreaMap.has_key(key)):
+            c2AreaMap[key].append(area)
+        else:
+            c2AreaMap[key] = [area]
+               
+    
+    logger.info("End to get lipid name mapping to area info")
+    return c2AreaMap
     
 
+    
+def p6(lipidInfo):
+    
+    c2Area = getAreaMap(lipidInfo)
+    
+    logger.info("c2Area = " + str(c2Area))
+    
+    vldLipidAreaInfo = {}
+    for item in lipidInfo:        
+        lipidName = item[0]
+        fileName = item[-1]  
+        
+        
+        key = (lipidName, fileName)
+            
+        areas = c2Area[key]
+        vldLipidAreaInfo[key] =  areas
+        
+#         if(vldLipidInfo.has_key(lipidName)):
+#             vldLipidInfo[lipidName] = vldLipidInfo[lipidName] + areas
+#         else:
+#             vldLipidInfo[lipidName] =  areas   
+        
+
+                
+    
+    
+    logger.info("p6 result = " + str(vldLipidAreaInfo))
+    
+    return vldLipidAreaInfo
+
+def combineAreaInfo(finalLipidInfo, vldLipidAreaInfo, dataBook):
+    
+    fileNames = list(dataBook)
+    
+    finalAreaInfo = {}
+    
+    for item in finalLipidInfo:
+        lipidName = item[0]
+        
+    
+        #先处理没有别名的部分
+        for f in fileNames:
+            key = (lipidName, f)
+            if(vldLipidAreaInfo.has_key(key)):
+                finalAreaInfo[key] = vldLipidAreaInfo[key]
+            
+        
+        #处理有别名部分
+        lipidNames = []
+        if(lipidAlias.has_key(lipidName)):
+            lipidNames = lipidAlias[lipidName]
+        
+        for n in lipidNames:
+            for f in fileNames:
+                key1 = (lipidName, f)
+                key2 = (n, f)
+                
+                if(finalAreaInfo.has_key(key1)):
+                    finalAreaInfo[key1] = finalAreaInfo[key1] + vldLipidAreaInfo[key2]
+                else:
+                    if(vldLipidAreaInfo.has_key(key2)):
+                        finalAreaInfo[key1] = vldLipidAreaInfo[key2]
+                
+        
+        
+        
+                
+                
+                 
+            
+    for(k, v) in finalAreaInfo.iteritems():
+            finalAreaInfo[k] = set(v)   
+        
+    logger.info("final area info = " + str(finalAreaInfo))    
+    
+    return finalAreaInfo
+                
+            
+            
+        
+    
+    
+                
+                
+                
+            
+        
+         
+        
+        
 
     
 if __name__ == '__main__':
@@ -917,6 +1071,35 @@ if __name__ == '__main__':
     finalLipidInfo = combineLipidInfo(lipidInfoIn2dot1, lipidInfoIn2dot2, lipidInfoIn2dot3, lipidInfoIn2dot4a, lipidInfoIn2dot4b, lipidInfoIn2dot4c, c2f, c2om)
     
     pprint.pprint(finalLipidInfo)
+    
+    c2Areas = p6(lipidInfo)
+    
+    p6FinalResult = combineAreaInfo(finalLipidInfo, c2Areas, dataBook)
+    
+    ls = set()
+    for item in finalLipidInfo:
+        ls.add(item[0])
+        
+    logger.info("size1 = " + str(len(ls)))
+    
+    size2 = len(list(p6FinalResult))
+    
+    ls4 = list(p6FinalResult)
+    
+    ls5 = set()
+    for item in ls4:
+        ls5.add(item[0])
+    
+    size2 = len(ls5)
+        
+    logger.info("size2 = " + str(size2))
+    
+    ls2 = sorted(list(ls))
+    
+    ls3 = sorted(ls5)
+    
+    logger.info("ls2 = " + str(ls2))
+    logger.info("ls3 = " + str(ls3))
     
     
     

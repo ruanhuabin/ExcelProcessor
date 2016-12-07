@@ -202,6 +202,10 @@ if __name__ == '__main__':
     
     print(l4)
     
+    l5 = []
+    l5.append([x for x in l1])
+    print l5
+    
 #     num =  getGroupNum('TG(9:0/9:0/19:4)+NH4')
 #     print("num = " + str(num))
     
