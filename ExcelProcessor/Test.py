@@ -47,7 +47,7 @@ def getKey(item):
 data = [["c5", 1], ["c3", 2], ["c4", 8]]
 
 data.sort(cmp=None, key=getKey, reverse=True)
-print data
+print "data.sort = " + str(data)
 
 a = 3
 b = "Hello B"
