@@ -31,8 +31,8 @@ class ScreenFrame:
         frame = Frame(master,width=400,height=600)
         frame.pack()   
         
-        self.inputFilePath =StringVar()
-        self.labelFolder = Label(frame,textvariable=self.inputFilePath).grid(row=0,columnspan=2)
+        self.inputFolderPath =StringVar()
+        self.labelFolder = Label(frame,textvariable=self.inputFolderPath).grid(row=0,columnspan=2)
         
         self.log_file_btn = Button(frame, text="Select Screen File", command=self.selectInputFile).grid(row=1, columnspan=2)
         
@@ -91,7 +91,7 @@ class ScreenFrame:
 
     def selectInputFile(self):
         filename = askopenfilename()
-        self.inputFilePath.set(filename)
+        self.inputFolderPath.set(filename)
         self.inputFilename = filename
         
        
@@ -121,18 +121,18 @@ class ScreenFrame:
         
     def run_thread(self, text_field, outputFilename):
         
-        text_field.insert(INSERT, "[%s]: Start to Process file: %s\n" % (getCurrTime(), self.inputFilePath.get()))   
+        text_field.insert(INSERT, "[%s]: Start to Process file: %s\n" % (getCurrTime(), self.inputFolderPath.get()))   
         
-        self.logger.info( "Start to Process file:" + self.inputFilePath.get())     
+        self.logger.info( "Start to Process file:" + self.inputFolderPath.get())     
         
         
          
         rowTitleMust = [compoundNameTitle, mzExpectedTitle, libraryScoreTitle, measuredAreaTitle, ipTitle, lsTitle, rtMeasuredTitle, mzDeltaTitle]
-        text_field.insert(INSERT, "[%s]: Start Loading Data: %s\n" %(getCurrTime(), self.inputFilePath.get()))
-        self.logger.info("Start loading data: " + self.inputFilePath.get())
+        text_field.insert(INSERT, "[%s]: Start Loading Data: %s\n" %(getCurrTime(), self.inputFolderPath.get()))
+        self.logger.info("Start loading data: " + self.inputFolderPath.get())
         [self.inputDataBook, self.outputDataBook] = init(self.inputFilename, self.logger)
-        text_field.insert(INSERT, "[%s]: Finish Loading Data: %s\n" %(getCurrTime(), self.inputFilePath.get()))
-        self.logger.info("Finish loading data: " + self.inputFilePath.get())
+        text_field.insert(INSERT, "[%s]: Finish Loading Data: %s\n" %(getCurrTime(), self.inputFolderPath.get()))
+        self.logger.info("Finish loading data: " + self.inputFolderPath.get())
         
         
         #print "self.inputDataBook = ", self.inputDataBook        
@@ -196,7 +196,7 @@ class ScreenFrame:
         
     
     def startProcessing(self, text_field):
-        if(self.inputFilePath.get() == ""):
+        if(self.inputFolderPath.get() == ""):
             tkMessageBox.showerror("Error", "Please select a screen file to be processed")
             return
         if(self.outputFolderPath.get() == ""):

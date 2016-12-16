@@ -2,32 +2,37 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="reverseDict" key="selection"/>
-		<item value="false" key="casesensitive"/>
+		<item value="TopRT" key="selection"/>
+		<item value="true" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
-			<item value="reverseDict"/>
-			<item value="cl"/>
-			<item value="cfDict"/>
-			<item value="file name ="/>
-			<item value="info"/>
-			<item value="Total Columns"/>
-			<item value="logger.info"/>
+			<item value="MScore"/>
+			<item value="MSCore"/>
+			<item value="c2MSCore"/>
+			<item value="c2Area"/>
 			<item value="print"/>
+			<item value="keys of c2f"/>
+			<item value="logger.info"/>
+			<item value="info"/>
 		</list>
 		<list key="replacehistory">
-			<item value="ccDict"/>
-			<item value="debug"/>
+			<item value="TopRT"/>
+			<item value="c2TopRT"/>
+			<item value="c2MSCore"/>
 			<item value="logger.debug"/>
+			<item value="debug"/>
+			<item value="Area"/>
+			<item value="phSMG3"/>
+			<item value="CerG2"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="300" key="DIALOG_WIDTH"/>
 		<item value="1|Microsoft YaHei UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Microsoft YaHei UI" key="DIALOG_FONT_NAME"/>
 		<item value="410" key="DIALOG_HEIGHT"/>
-		<item value="818" key="DIALOG_X_ORIGIN"/>
-		<item value="255" key="DIALOG_Y_ORIGIN"/>
+		<item value="1104" key="DIALOG_X_ORIGIN"/>
+		<item value="326" key="DIALOG_Y_ORIGIN"/>
 	</section>
 </section>

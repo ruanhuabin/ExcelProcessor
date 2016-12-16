@@ -12,6 +12,7 @@ import pprint
 from subprocess import Popen
 from popen2 import popen4
 import glob
+import time
 #import operator
 
 logger = MyLogger("Lipid-Logger", logging.INFO).getLogger()
@@ -808,7 +809,7 @@ def p2dot4a(f2c, c2TopRTAvg, c2TopRT, c2Grade):
     
     return vldLipidInfo
 
-def reorderAllGradeCD(c2TopRT):
+def reorderAllGradeCD(c2TopRT, c2Grade):
     newc2TopRTAvg = {}
     newc2TopRT = {}
     
@@ -845,7 +846,7 @@ def p2dot4b(f2c, c2TopRTAvg, c2TopRT, c2Grade):
     logger.debug("Start to process lipid with grade values as C or D")
     vldLipidInfo = []
     
-    (newc2TopRTAvg, newc2TopRT) = reorderAllGradeCD(c2TopRT)
+    (newc2TopRTAvg, newc2TopRT) = reorderAllGradeCD(c2TopRT, c2Grade)
     
     #print("newc2TopRT = " + str(newc2TopRT))
     
@@ -893,7 +894,7 @@ def p2dot4b(f2c, c2TopRTAvg, c2TopRT, c2Grade):
     return vldLipidInfo               
 
 
-def reorderAllGradeABCD(c2TopRT):
+def reorderAllGradeABCD(c2TopRT, c2Grade):
     newc2TopRTAvg = {}
     newc2TopRT = {}
     
@@ -955,7 +956,7 @@ def p2dot4c(f2c, c2TopRTAvg, c2TopRT, c2Grade):
     logger.debug("Start to process lipid with grade values as A,B,C,D")
     vldLipidInfo = []
     
-    (newc2TopRTAvg, newc2TopRT, alias) = reorderAllGradeABCD(c2TopRT)
+    (newc2TopRTAvg, newc2TopRT, alias) = reorderAllGradeABCD(c2TopRT, c2Grade)
     
 #     print("alias = " + str(alias))
     
@@ -1057,68 +1058,7 @@ def getAreaMap2(lipidInfo):
     return c2AreaMap
 
 
-def getAreaMap(lipidInfo):
-    logger.debug("Start to get lipid name mapping to area info")
-    
-    c2AreaList = []  
-    
-    logger.debug("lipidInfo size = " + str(len(lipidInfo)))
-#     cnt = 0
-    for item in lipidInfo:
-        area = item[7]
-        lipidName = item[0]
-        fileName = item[-1]
-       
-        c2AreaList.append((lipidName, fileName, area))
-#         logger.debug("loop, cnt = " + str(cnt))
-#         cnt = cnt + 1
-        for item2 in lipidInfo:
-            lipidName2 = item2[0]
-            if(lipidName != lipidName2):
-                continue
-             
-            fileName2 = item[-1]
-            area2 = item[7]
-             
-            if(fileName != fileName2):
-                c2AreaList.append((lipidName, fileName2, area2))
-            
-            if(fileName == fileName2 and area != area2):
-                c2AreaList.append((lipidName, fileName2, area2))
-            
-            
-            
-#         areaInfo = {}
-#          
-#         #currKey = (lipidName, fileName)
-#         currKey = fileName
-#         if(areaInfo.has_key(currKey)):
-#             #areaInfo[currKey].append((fileName, area))
-#             areaInfo[currKey].append(area)
-#         else:
-#             #areaInfo[currKey] = [(fileName, area)]
-#             areaInfo[currKey] = [area]
-#              
-#         c2Area[lipidName] = areaInfo
-    
-    #convert c2AreaList to c2AreaMap
-    
-    c2AreaMap = {}
-    for item in c2AreaList:
-        lipidName = item[0]
-        fileName = item[1]
-        area = item[2]
-        
-        key = (lipidName, fileName)
-        
-        if(c2AreaMap.has_key(key)):
-            c2AreaMap[key].append(area)
-        else:
-            c2AreaMap[key] = [area]
-               
-    
-    logger.debug("End to get lipid name mapping to area info")
-    return c2AreaMap
+
     
 
     
@@ -1142,15 +1082,14 @@ def getFinalC2AreaMap(lipidInfo):
 #         if(vldLipidInfo.has_key(lipidName)):
 #             vldLipidInfo[lipidName] = vldLipidInfo[lipidName] + areas
 #         else:
-#             vldLipidInfo[lipidName] =  areas   
-        
-
-                
-    
-    
+#             vldLipidInfo[lipidName] =  areas      
     logger.debug("p6 result = " + str(vldLipidAreaInfo))
     
     return vldLipidAreaInfo
+
+
+
+
 
 def p6(finalLipidInfo, vldLipidAreaInfo, dataBook):
     
@@ -1187,14 +1126,7 @@ def p6(finalLipidInfo, vldLipidAreaInfo, dataBook):
                 else:
                     if(vldLipidAreaInfo.has_key(key2)):
                         finalAreaInfo[key1] = vldLipidAreaInfo[key2]
-                
-        
-        
-        
-                
-                
-                 
-    
+       
     #取出value中重复的值       
     for(k, v) in finalAreaInfo.iteritems():
             finalAreaInfo[k] = set(v)   
@@ -1202,7 +1134,188 @@ def p6(finalLipidInfo, vldLipidAreaInfo, dataBook):
     logger.debug("final area info = " + str(finalAreaInfo))    
     
     return finalAreaInfo
+
+
+def getMSCoreMap(lipidInfo):
+    logger.debug("Start to get lipid name mapping to mscore info")
+    
+    c2MScoreMap = {}
+    for item in lipidInfo:
+        mscore = item[8]
+        lipidName = item[0]
+        fileName = item[-1]
+        
+        key = (lipidName, fileName)
+        if(c2MScoreMap.has_key(key)):
+            #c2AreaMap[key].add(area);
+            c2MScoreMap[key].append(mscore)
+        else:
+            c2MScoreMap[key] = [mscore]
+    logger.debug("End to get lipid name mapping to mscore info")
+    
+    return c2MScoreMap
+
+
+
+
+
+def getFinalC2MSCoreMap(lipidInfo):
+    
+    c2MSCore = getMSCoreMap(lipidInfo)
+    
+    logger.debug("c2MSCore = " + str(c2MSCore))
+    
+    vldLipidMScoreInfo = {}
+    for item in lipidInfo:        
+        lipidName = item[0]
+        fileName = item[-1]  
+        
+        
+        key = (lipidName, fileName)
+            
+        areas = c2MSCore[key]
+        vldLipidMScoreInfo[key] =  areas
+    
+    logger.debug("p7 result = " + str(vldLipidMScoreInfo))
+    
+    return vldLipidMScoreInfo
                 
+
+def p7(finalLipidInfo, vldLipidMSoreInfo, dataBook):
+    
+    fileNames = list(dataBook)
+    
+    finalMScoreInfo = {}
+    
+    for item in finalLipidInfo:
+        lipidName = item[0]
+        
+    
+        #先处理没有别名的部分
+        for f in fileNames:
+            key = (lipidName, f)
+            if(vldLipidMSoreInfo.has_key(key)):
+                finalMScoreInfo[key] = vldLipidMSoreInfo[key]
+            
+        
+        #处理有别名部分
+        lipidNames = []
+        if(lipidAlias.has_key(lipidName)):
+            lipidNames = lipidAlias[lipidName]
+        
+        for n in lipidNames:
+            for f in fileNames:
+                key1 = (lipidName, f)
+                key2 = (n, f)
+                
+                if(finalMScoreInfo.has_key(key1)):
+                    if(vldLipidMSoreInfo.has_key(key2)):
+                        finalMScoreInfo[key1] = finalMScoreInfo[key1] + vldLipidMSoreInfo[key2]
+                    else:
+                        finalMScoreInfo[key1] = finalMScoreInfo[key1]                        
+                else:
+                    if(vldLipidMSoreInfo.has_key(key2)):
+                        finalMScoreInfo[key1] = vldLipidMSoreInfo[key2]
+       
+    #取出value中重复的值       
+    for(k, v) in finalMScoreInfo.iteritems():
+            finalMScoreInfo[k] = set(v)   
+        
+    logger.debug("final area info = " + str(finalMScoreInfo))    
+    
+    return finalMScoreInfo
+
+
+def getTopRTMap(lipidInfo):
+    logger.debug("Start to get lipid name mapping to toprt info")
+    
+    c2TopRTMap = {}
+    for item in lipidInfo:
+        topRT = item[2]
+        lipidName = item[0]
+        fileName = item[-1]
+        
+        key = (lipidName, fileName)
+        if(c2TopRTMap.has_key(key)):
+            #c2AreaMap[key].add(area);
+            c2TopRTMap[key].append(topRT)
+        else:
+            c2TopRTMap[key] = [topRT]
+    logger.debug("End to get lipid name mapping to mscore info")
+    
+    return c2TopRTMap
+
+
+
+
+
+def getFinalC2TopRTMap(lipidInfo):
+    
+    c2TopRT = getTopRTMap(lipidInfo)
+    
+    logger.debug("c2TopRT = " + str(c2TopRT))
+    
+    vldLipidTopRTInfo = {}
+    for item in lipidInfo:        
+        lipidName = item[0]
+        fileName = item[-1]  
+        
+        
+        key = (lipidName, fileName)
+            
+        areas = c2TopRT[key]
+        vldLipidTopRTInfo[key] =  areas
+    
+    logger.debug("p8 result = " + str(vldLipidTopRTInfo))
+    
+    return vldLipidTopRTInfo
+                
+
+def p8(finalLipidInfo, vldLipidTopRTInfo, dataBook):
+    
+    fileNames = list(dataBook)
+    
+    finalTopRTInfo = {}
+    
+    for item in finalLipidInfo:
+        lipidName = item[0]
+        
+    
+        #先处理没有别名的部分
+        for f in fileNames:
+            key = (lipidName, f)
+            if(vldLipidTopRTInfo.has_key(key)):
+                finalTopRTInfo[key] = vldLipidTopRTInfo[key]
+            
+        
+        #处理有别名部分
+        lipidNames = []
+        if(lipidAlias.has_key(lipidName)):
+            lipidNames = lipidAlias[lipidName]
+        
+        for n in lipidNames:
+            for f in fileNames:
+                key1 = (lipidName, f)
+                key2 = (n, f)
+                
+                if(finalTopRTInfo.has_key(key1)):
+                    if(vldLipidTopRTInfo.has_key(key2)):
+                        finalTopRTInfo[key1] = finalTopRTInfo[key1] + vldLipidTopRTInfo[key2]
+                    else:
+                        finalTopRTInfo[key1] = finalTopRTInfo[key1]                        
+                else:
+                    if(vldLipidTopRTInfo.has_key(key2)):
+                        finalTopRTInfo[key1] = vldLipidTopRTInfo[key2]
+       
+    #取出value中重复的值       
+    for(k, v) in finalTopRTInfo.iteritems():
+            finalTopRTInfo[k] = set(v)   
+        
+    logger.debug("final area info = " + str(finalTopRTInfo))    
+    
+    return finalTopRTInfo
+
+
             
 def initWordBook():
     wb = Workbook()
@@ -1216,6 +1329,7 @@ def createOutputDataBook():
     outputDataBook = initWordBook()    
     outputDataBook.create_sheet("Sheet-1", 0)
     outputDataBook.create_sheet("Sheet-2", 1)
+    outputDataBook.create_sheet("Sheet-3", 2)
     
     return outputDataBook   
     
@@ -1225,8 +1339,272 @@ def saveOutputDataBook(wordbook, output="newbook.xlsx"):
 
 def getSortedKey(item):
     return item[0]
+
+
+def getCurrTime():    
+    st = time.localtime()
+    year = st.tm_year
+    month = st.tm_mon
+    day = st.tm_mday
+    hour = st.tm_hour
+    miniute = st.tm_min
+    sec = st.tm_sec
     
+    strTime = str(year) + "-" + str("%02d" % month) + "-" + str("%02d" % day) + "-" + str("%02d" % hour) + ":" + str("%02d" % miniute) + ":" + str("%02d" % sec)
+    
+    return strTime
+
+def initRangeValue(ms2WindowValue, topRTRangeValue):
+    ms2Window = ms2WindowValue
+    topRTRange = topRTRangeValue;
+    
+def run_lipid_process(self, textField):
+    
+    #得到目录./lipddata下的所有文件的内容，以dict的形式组织，该dict的key是文件名，value是文件的内容，文件的内容又
+    #以dict的形式进行组织，key是对应文件中的每1列的标题，value是该列对应的内容
+    
+    textField.insert('insert', "[%s]: Start to load files in folder: %s\n" % (getCurrTime(), self.inputFolderPath.get()))
+    
+    textField.insert('insert', "[%s]: Start to load files in folder: %s\n" % (getCurrTime(), str(ms2Window)))
+    
+    textField.insert('insert', "[%s]: Start to load files in folder: %s\n" % (getCurrTime(), str(topRTRange)))
+        
+    logger.info("Start to load data");
+    #dataBook = loadAllTextFile("./lipiddata", logger)    
+    dataBook = makeTestData()
+    logger.info("End to load data")
+    
+    logger.info("Start to make databook as tuple list")
+    lipidInfo = makeTuple(dataBook)
+    logger.info("End to make databook as tuple list")
+    
+    logger.info("Start to remove item that the gap between RT and TopRT is bigger than ms2Window(0.2)")
+    lipidInfo = rm0dot2(lipidInfo)
+    logger.info("End to remove item that the gap between RT and TopRT is bigger than ms2Window(0.2)")
+    
+    logger.info("Start to calculate Average of toprt values")
+    (c2TopRTAvg, c2TopRT) = calTopRTAvg(lipidInfo)
+    logger.info("End to calculate Average of toprt values")
+    
+    logger.info("Start to calculate f->c and c->f map")
+    (f2c,c2f) = getFormulaMap(lipidInfo)
+    logger.info("End to calculate f->c and c->f map")
+    
+    logger.info("Start to calculate c->grade map")
+    c2Grade = getGradeMap(lipidInfo)
+    logger.info("End to calculate c->grade map")
+    
+    logger.info("Start to process 2dot1")
+    lipidInfoIn2dot1 = p2dot1(f2c, c2TopRTAvg,c2TopRT)
+    logger.info("End to process 2dot1")
+    
+    logger.info("Start to process 2dot2")
+    lipidInfoIn2dot2 = p2dot2(f2c, c2TopRT)
+    logger.info("End to process 2dot2")
+    
+    logger.info("Start to process 2dot3")
+    lipidInfoIn2dot3 = p2dot3(f2c, c2TopRT)
+    logger.info("End to process 2dot3")
+    
+
+    logger.info("Start to remove lipid name in step 2.1, 2.2,2.3")
+    rmLipidNameIn2dot123(f2c, c2TopRTAvg, c2TopRT, c2Grade)
+    logger.info("End to remove lipid name in step 2.1, 2.2,2.3")
+    
+    logger.info("Start to process 2dot4a")
+    lipidInfoIn2dot4a = p2dot4a(f2c, c2TopRTAvg, c2TopRT, c2Grade)
+    logger.info("End to process 2dot4a")
+    
+    logger.info("Start to process 2dot4b")
+    lipidInfoIn2dot4b = p2dot4b(f2c, c2TopRTAvg, c2TopRT, c2Grade)
+    logger.info("End to process 2dot4b")
+    
+    logger.info("Start to process 2dot4c")
+    lipidInfoIn2dot4c = p2dot4c(f2c, c2TopRTAvg, c2TopRT, c2Grade)
+    logger.info("End to process 2dot4c")
+    
+    
+    logger.info("Start to get c->obsmz map")
+    c2om = getObsMZMap(lipidInfo)
+    logger.info("End to get c->obsmz map")
+    #将上面所有lipidInfo[num]dot[num]的化合物归并到一起，list中的每个元素是一个元组(lipidName, formula, ObsMZ, TopRT ...)
+    logger.info("Start to combine all lipind info together")
+    finalLipidInfo = combineLipidInfo(lipidInfoIn2dot1, lipidInfoIn2dot2, lipidInfoIn2dot3, lipidInfoIn2dot4a, lipidInfoIn2dot4b, lipidInfoIn2dot4c, c2f, c2om)
+    logger.info("End to combine all lipind info together")
+    #pprint.pprint(finalLipidInfo)
+    logger.info("Start to get (c,filename) -> area map")
+    c2Areas = getFinalC2AreaMap(lipidInfo)
+    logger.info("End to get (c,filename) -> area map")
+    
+    logger.info("Start to get (c,filename) -> mscore map")
+    c2MSCores = getFinalC2MSCoreMap(lipidInfo)
+    logger.info("End to get (c,filename) -> mscore map")
+    
+    logger.info("Start to get (c,filename) -> toprt map")
+    c2TopRTs = getFinalC2TopRTMap(lipidInfo)
+    logger.info("End to get (c,filename) -> toprt map")
+    
+    logger.info("Start to get c->mScore mapp")
+    c2ms = getC2MScore(lipidInfo)
+    logger.info("c2ms = " + str(c2ms))
+    logger.info("End to get c->mScore mapp")
+    
+    logger.info("Start to process 5")
+    (p5c2msScore, p5c2MaxMSScore) = p5(finalLipidInfo,c2ms)
+    p5FinalResult = p5c2MaxMSScore
+    logger.info("c2msScoreFinal = " + str(p5c2msScore))
+    logger.info("c2MaxMSFinal = " + str(p5c2MaxMSScore))
+    logger.info("End to process 5")
+    
+    
+    
+    #p6FinalResult中key是(化合物名，文件名)，value是化合物在该文件中的Area值。
+    logger.info("Start to process 6")
+    p6FinalResult = p6(finalLipidInfo, c2Areas, dataBook)
+    logger.info("End to process 6")
+    
+    logger.info("Start to process 7")
+    p7FinalResult = p7(finalLipidInfo, c2MSCores, dataBook)
+    logger.info("End to process 7")
+    
+    logger.info("Start to process 8")
+    p8FinalResult = p8(finalLipidInfo, c2TopRTs, dataBook)
+    logger.info("End to process 8")
+    
+    #现在需要做的事情是构造表头，内容为：lipid，Formula，ObsMZ，TopRT，文件名1,文件名2, .....
+    logger.info("Start to sort the final lipid info")
+    finalLipidInfo.sort(cmp=None, key=getSortedKey, reverse=False)
+    logger.info("End to sort the final lipid info")
+    
+    logger.info("Start to sort file names")
+    fileNames = sorted(list(dataBook))
+    logger.info("End to sort file names")
+    
+    
+    logger.info("Start to write line data to output file")
+    sheetHeader = ["Lipid", "Formula", "ObsMZ", "TopRT", "Max m-Score"] + fileNames
+    
+    
+    newDataBook = createOutputDataBook()
+    sheet1 = newDataBook.get_sheet_by_name("Sheet-1")
+    sheet2 = newDataBook.get_sheet_by_name("Sheet-2")
+    sheet3 = newDataBook.get_sheet_by_name("Sheet-3")
+    sheet1.append(sheetHeader)
+    sheet2.append(sheetHeader)
+    sheet3.append(sheetHeader)
+    
+    #开始向第一个worksheet写数据
+    cnt = 0
+    for item in finalLipidInfo:
+        lipidName = item[0]
+        lineData1 = []
+        lineData2 = []
+        lineData3 = []
+        
+        lineData1.append(item[0])
+        lineData2.append(item[0])
+        lineData3.append(item[0])
+        
+        formula = "null"
+        for v in item[1]:
+            formula = v
+            break
+        lineData1.append(formula)
+        lineData2.append(formula)
+        lineData3.append(formula)
+        
+        ObsMz = "null"
+        for v in item[2]:
+            ObsMz = v
+            break 
+        
+        if(ObsMz[-1] == "/"):
+            ObsMz = ObsMz[0:-1]
+        lineData1.append(ObsMz)
+        lineData2.append(formula)
+        lineData3.append(formula)
+        
+        topRT = item[3]
+        lineData1.append(topRT)
+        lineData2.append(formula)
+        lineData3.append(formula)
+        
+        maxMScore = str(p5FinalResult[lipidName])
+        lineData1.append(maxMScore)
+        lineData2.append(formula)
+        lineData3.append(formula)
+        
+        #Prepare area info in sheet1        
+        for f in fileNames:
+            key = (lipidName, f)
+            area="null"
+            if(p6FinalResult.has_key(key)):
+                area = ""
+                for a in p6FinalResult[key]:
+            
+                    area = area + a + "/"
+            
+            if(area[-1] == "/"):
+                area = area[0:-1]    
+            lineData1.append(area)
+            
+            
+        #Prepare m-Socre info in sheet1        
+        for f in fileNames:
+            key = (lipidName, f)
+            mscore="null"
+            if(p7FinalResult.has_key(key)):
+                mscore = ""
+                for a in p7FinalResult[key]:
+            
+                    mscore = mscore + a + "/"
+            
+            if(mscore[-1] == "/"):
+                mscore = mscore[0:-1]    
+            lineData2.append(mscore)
+            
+            
+        #Prepare toprt info in sheet3        
+        for f in fileNames:
+            key = (lipidName, f)
+            topRT="null"
+            if(p8FinalResult.has_key(key)):
+                topRT = ""
+                for a in p8FinalResult[key]:
+            
+                    topRT = topRT + a + "/"
+            
+            if(topRT[-1] == "/"):
+                topRT = topRT[0:-1]    
+            lineData3.append(topRT)
+        
+        sheet1.append(lineData1)
+        sheet2.append(lineData2)
+        sheet3.append(lineData3)
+        
+        if((cnt + 1) % 100 == 0 or (cnt + 1) == len(finalLipidInfo)):
+            logger.info("Write line data counts:  " + str(cnt + 1) + " (" + str(len(finalLipidInfo)) + ")")
+        
+        cnt  = cnt + 1
+        
+            
+    logger.info("Start to write line data to output file")
+    saveOutputDataBook(wordbook=newDataBook, output="lipid.xlsx")
+    logger.info("End to write line data to output file")
+    
+    excelProcess = popen4("start excel D:\workspace-excelprocess-final\ExcelProcessor/lipid.xlsx")
+    print("Enter to finish")
+    import sys
+    line = sys.stdin.readline()
+    #sleep(100)
+    Popen("taskkill /F /im EXCEL.EXE",shell=True)
+    
+       
 if __name__ == '__main__':
+#     initRangeValue(0.2, 0.25)
+#     run_lipid_process()
+#      
+#     exit()
         
     #得到目录./lipddata下的所有文件的内容，以dict的形式组织，该dict的key是文件名，value是文件的内容，文件的内容又
     #以dict的形式进行组织，key是对应文件中的每1列的标题，value是该列对应的内容
@@ -1297,6 +1675,14 @@ if __name__ == '__main__':
     c2Areas = getFinalC2AreaMap(lipidInfo)
     logger.info("End to get (c,filename) -> area map")
     
+    logger.info("Start to get (c,filename) -> mscore map")
+    c2MSCores = getFinalC2MSCoreMap(lipidInfo)
+    logger.info("End to get (c,filename) -> mscore map")
+    
+    logger.info("Start to get (c,filename) -> toprt map")
+    c2TopRTs = getFinalC2TopRTMap(lipidInfo)
+    logger.info("End to get (c,filename) -> toprt map")
+    
     logger.info("Start to get c->mScore mapp")
     c2ms = getC2MScore(lipidInfo)
     logger.info("c2ms = " + str(c2ms))
@@ -1316,6 +1702,14 @@ if __name__ == '__main__':
     p6FinalResult = p6(finalLipidInfo, c2Areas, dataBook)
     logger.info("End to process 6")
     
+    logger.info("Start to process 7")
+    p7FinalResult = p7(finalLipidInfo, c2MSCores, dataBook)
+    logger.info("End to process 7")
+    
+    logger.info("Start to process 8")
+    p8FinalResult = p8(finalLipidInfo, c2TopRTs, dataBook)
+    logger.info("End to process 8")
+    
     #现在需要做的事情是构造表头，内容为：lipid，Formula，ObsMZ，TopRT，文件名1,文件名2, .....
     logger.info("Start to sort the final lipid info")
     finalLipidInfo.sort(cmp=None, key=getSortedKey, reverse=False)
@@ -1327,25 +1721,36 @@ if __name__ == '__main__':
     
     
     logger.info("Start to write line data to output file")
-    sheet1Header = ["Lipid", "Formula", "ObsMZ", "TopRT", "Max m-Score"] + fileNames
+    sheetHeader = ["Lipid", "Formula", "ObsMZ", "TopRT", "Max m-Score"] + fileNames
     
     
     newDataBook = createOutputDataBook()
     sheet1 = newDataBook.get_sheet_by_name("Sheet-1")
-    sheet1.append(sheet1Header)
+    sheet2 = newDataBook.get_sheet_by_name("Sheet-2")
+    sheet3 = newDataBook.get_sheet_by_name("Sheet-3")
+    sheet1.append(sheetHeader)
+    sheet2.append(sheetHeader)
+    sheet3.append(sheetHeader)
     
     #开始向第一个worksheet写数据
     cnt = 0
     for item in finalLipidInfo:
         lipidName = item[0]
-        lineData = []
-        lineData.append(item[0])
+        lineData1 = []
+        lineData2 = []
+        lineData3 = []
+        
+        lineData1.append(item[0])
+        lineData2.append(item[0])
+        lineData3.append(item[0])
         
         formula = "null"
         for v in item[1]:
             formula = v
             break
-        lineData.append(formula)
+        lineData1.append(formula)
+        lineData2.append(formula)
+        lineData3.append(formula)
         
         ObsMz = "null"
         for v in item[2]:
@@ -1354,14 +1759,21 @@ if __name__ == '__main__':
         
         if(ObsMz[-1] == "/"):
             ObsMz = ObsMz[0:-1]
-        lineData.append(ObsMz)
+        lineData1.append(ObsMz)
+        lineData2.append(formula)
+        lineData3.append(formula)
         
         topRT = item[3]
-        lineData.append(topRT)
+        lineData1.append(topRT)
+        lineData2.append(formula)
+        lineData3.append(formula)
         
         maxMScore = str(p5FinalResult[lipidName])
-        lineData.append(maxMScore)
-                
+        lineData1.append(maxMScore)
+        lineData2.append(formula)
+        lineData3.append(formula)
+        
+        #Prepare area info in sheet1        
         for f in fileNames:
             key = (lipidName, f)
             area="null"
@@ -1373,9 +1785,41 @@ if __name__ == '__main__':
             
             if(area[-1] == "/"):
                 area = area[0:-1]    
-            lineData.append(area)
+            lineData1.append(area)
+            
+            
+        #Prepare m-Socre info in sheet1        
+        for f in fileNames:
+            key = (lipidName, f)
+            mscore="null"
+            if(p7FinalResult.has_key(key)):
+                mscore = ""
+                for a in p7FinalResult[key]:
+            
+                    mscore = mscore + a + "/"
+            
+            if(mscore[-1] == "/"):
+                mscore = mscore[0:-1]    
+            lineData2.append(mscore)
+            
+            
+        #Prepare toprt info in sheet3        
+        for f in fileNames:
+            key = (lipidName, f)
+            topRT="null"
+            if(p8FinalResult.has_key(key)):
+                topRT = ""
+                for a in p8FinalResult[key]:
+            
+                    topRT = topRT + a + "/"
+            
+            if(topRT[-1] == "/"):
+                topRT = topRT[0:-1]    
+            lineData3.append(topRT)
         
-        sheet1.append(lineData)
+        sheet1.append(lineData1)
+        sheet2.append(lineData2)
+        sheet3.append(lineData3)
         
         if((cnt + 1) % 100 == 0 or (cnt + 1) == len(finalLipidInfo)):
             logger.info("Write line data counts:  " + str(cnt + 1) + " (" + str(len(finalLipidInfo)) + ")")
@@ -1383,9 +1827,10 @@ if __name__ == '__main__':
         cnt  = cnt + 1
         
             
-    
+    logger.info("Start to write line data to output file")
     saveOutputDataBook(wordbook=newDataBook, output="lipid.xlsx")
     logger.info("End to write line data to output file")
+    
     
     excelProcess = popen4("start excel D:\workspace-excelprocess-final\ExcelProcessor/lipid.xlsx")
     print("Enter to finish")

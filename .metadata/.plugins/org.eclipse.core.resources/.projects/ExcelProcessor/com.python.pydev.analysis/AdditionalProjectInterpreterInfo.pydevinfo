@@ -1,43 +1,43 @@
 -- VERSION_4
 -- START DISKCACHE_2
 D:\workspace-excelprocess-final\.metadata\.plugins\org.eclipse.core.resources\.projects\ExcelProcessor\com.python.pydev.analysis\v2_indexcache
-LipidIonProcessor|1481274673419090000|D:\workspace-excelprocess-final\ExcelProcessor\LipidIonProcessor.py
+LipidIonProcessor|1481878385189331000|D:\workspace-excelprocess-final\ExcelProcessor\LipidIonProcessor.py
 constant|1477640742758943000|D:\workspace-excelprocess-final\ExcelProcessor\constant.py
 lipid2|1480406280840525000|D:\workspace-excelprocess-final\ExcelProcessor\lipid2.py
 util|1474184225911258000|D:\workspace-excelprocess-final\ExcelProcessor\util.py
 Test|1481250711887244000|D:\workspace-excelprocess-final\ExcelProcessor\Test.py
+LipidProcessorGUI|1481877404916401000|D:\workspace-excelprocess-final\ExcelProcessor\LipidProcessorGUI.py
 Screen|1476157291869967000|D:\workspace-excelprocess-final\ExcelProcessor\Screen.py
 Quan|1474169046656086000|D:\workspace-excelprocess-final\ExcelProcessor\Quan.py
-ScreenProcessorGUI|1474185022930888000|D:\workspace-excelprocess-final\ExcelProcessor\ScreenProcessorGUI.py
-QuanProcessorGUI|1474168801788390000|D:\workspace-excelprocess-final\ExcelProcessor\QuanProcessorGUI.py
+ScreenProcessorGUI|1481874439216786000|D:\workspace-excelprocess-final\ExcelProcessor\ScreenProcessorGUI.py
+QuanProcessorGUI|1481874439192774000|D:\workspace-excelprocess-final\ExcelProcessor\QuanProcessorGUI.py
 Logger|1474183271210462000|D:\workspace-excelprocess-final\ExcelProcessor\Logger.py
 lipid|1480405846134725000|D:\workspace-excelprocess-final\ExcelProcessor\lipid.py
 -- END DISKCACHE
 -- START DICTIONARY
-20
+19
 4=LipidIonProcessor
 2=constant
 3=lipid2
-18=QuanFrame.selectInputFile
 7=Screen
-19=ScreenFrame.selectInputFile
+17=ScreenFrame.selectInputFile
 9=Logger
 5=lipid
-12=QuanFrame
-20=MyLogger.__init__
-17=QuanFrame.run_thread
+13=QuanFrame
+19=MyLogger.__init__
 6=util
 1=Test
-14=MyLogger
-16=QuanFrame.__init__
-13=ScreenFrame
-15=ScreenFrame.__init__
+12=LipidProcessorGUI
+15=MyLogger
+18=QuanFrame.__init__
+14=ScreenFrame
+16=ScreenFrame.__init__
 8=Quan
 11=ScreenProcessorGUI
 10=QuanProcessorGUI
 -- END DICTIONARY
 -- START TREE 1
-90
+99
 a|1|a!11@
 add|2|addValueToDict!10@adductTitle!19@
 all|1|allc!27@
@@ -46,7 +46,9 @@ ave|3|average!11@average!42@average!26@
 b|1|b!11@
 c2a|1|c2Areas!35@
 c2g|1|c2Grade!35@
+c2m|2|c2MSCores!35@c2ms!35@
 c2o|1|c2om!35@
+c2t|1|c2TopRTs!35@
 c5c|1|c5c4data!11@
 cal|1|calTopRTAvg!34@
 cfd|2|cfDict!43@cfDict!27@
@@ -68,10 +70,10 @@ for|2|formula!35@formulaTitle!19@
 fra|1|fragmentTitle!19@
 g_r|1|g_rtValue!59@
 gen|9|genRTRangeColumn!58@genMeasuredAreaColumn!58@genRTMeasuredColumn!58@genFullName!34@genRTColumn!58@genLibraryScoreColumn!58@genLSColumn!58@genMZDeltaColumn!58@genIPColumn!58@
-get|42|getFormulaMap!34@getTwoPairNumCompnd!26@getGroupNum!10@getFinalNeedToCombine!42@getCompndNameAndFormula!42@getGroupNum!42@getCompndNameAndSpecifyColumn!26@getFinalC2AreaMap!34@get2dot1CompndInfo!26@getAreaMap!34@getKey!10@getInfoInPare!34@getGroupNum2!10@getGradeMap!34@getNumberStr!42@getFileList!26@getCompndInRange!26@getNumberStr!26@getCurrTime!50@getCompndNameAndGrades!42@getCompndNameAndGrades!26@getCompndNeedToCombine!26@getAreaMap2!34@getCompndInRange!42@getTwoPairNumCompnd!42@get2dot1CompndInfo!42@getCompndWithSameFormula!42@getSortedKey!34@getCompndNameAndSpecifyColumn!42@getCompndNameAndFormula!26@getFileList!34@getFileList!42@getFinalNeedToCombine!26@getCompndNeedToCombine!42@getGroupNum!34@getCompndNameAndTopRT!26@getKey!58@getObsMZMap!34@getGroupNum!26@getCompndWithSameFormula!26@getMScore!34@getCompndNameAndTopRT!42@
+get|45|getMSCoreMap!34@getFinalC2TopRTMap!34@getFormulaMap!34@getTwoPairNumCompnd!26@getGroupNum!10@getFinalNeedToCombine!42@getCompndNameAndFormula!42@getGroupNum!42@getCompndNameAndSpecifyColumn!26@getFinalC2AreaMap!34@get2dot1CompndInfo!26@getKey!10@getInfoInPare!34@getGroupNum2!10@getGradeMap!34@getNumberStr!42@getFileList!26@getCompndInRange!26@getC2MScore!34@getNumberStr!26@getCurrTime!50@getCompndNameAndGrades!42@getCompndNameAndGrades!26@getCompndNeedToCombine!26@getAreaMap2!34@getCompndInRange!42@getTwoPairNumCompnd!42@get2dot1CompndInfo!42@getFinalC2MSCoreMap!34@getCompndWithSameFormula!42@getSortedKey!34@getCompndNameAndSpecifyColumn!42@getCompndNameAndFormula!26@getFileList!34@getFileList!42@getFinalNeedToCombine!26@getCompndNeedToCombine!42@getGroupNum!34@getCompndNameAndTopRT!26@getKey!58@getObsMZMap!34@getGroupNum!26@getCompndWithSameFormula!26@getTopRTMap!34@getCompndNameAndTopRT!42@
 gra|1|grades!11@
 hig|1|highLightCell!50@
-ini|2|init!58@initWordBook!34@
+ini|3|initRangeValue!34@init!58@initWordBook!34@
 ipt|1|ipTitle!19@
 isa|9|isAllABCD!10@isAllAB!10@isAllCD!10@isAllNA!50@isAllAB!34@isAllCD!34@isAlpha!26@isAllABCD!34@isAlpha!42@
 isc|1|isContainPass!50@
@@ -84,15 +86,17 @@ l3|1|l3!11@
 l4|1|l4!11@
 l5|1|l5!11@
 lib|1|libraryScoreTitle!19@
-lin|2|lineData!35@line!35@
+lin|4|lineData2!35@lineData1!35@lineData3!35@line!35@
 lip|13|lipidFormula!19@lipidInfo!35@lipidInfoIn2dot4a!35@lipidAlias!35@lipidInfoIn2dot1!35@lipidGrade!19@lipidInfoIn2dot2!35@lipidName!35@lipidCompndName!19@lipidInfoIn2dot4c!35@lipidTopRT!19@lipidInfoIn2dot3!35@lipidInfoIn2dot4b!35@
 loa|8|loadData!50@loadAllTextFile!42@loadTextFile!26@loadData!66@loadAllTextFile!26@loadTextFile!42@loadAllTextFile!34@loadTextFile!34@
 log|3|logger!27@logger!35@logger!43@
 lst|1|lsTitle!19@
 mak|4|makeTuple!34@makeTestData!26@makeTestData!42@makeTestData!34@
+max|1|maxMScore!35@
 mea|1|measuredAreaTitle!19@
 mer|2|mergeLipidionName!42@mergeLipidionName!26@
 ms2|1|ms2Window!35@
+msc|1|mscore!35@
 myl|1|MyLogger!73@
 mza|1|mzApexTitle!19@
 mzd|1|mzDeltaTitle!19@
@@ -103,10 +107,15 @@ non|3|nonBlankLines!34@nonBlankLines!26@nonBlankLines!42@
 obs|1|ObsMz!35@
 p2d|6|p2dot1!34@p2dot4c!34@p2dot3!34@p2dot4a!34@p2dot4b!34@p2dot2!34@
 p5|1|p5!34@
+p5f|1|p5FinalResult!35@
 p6|1|p6!34@
 p6f|1|p6FinalResult!35@
+p7|1|p7!34@
+p7f|1|p7FinalResult!35@
+p8|1|p8!34@
+p8f|1|p8FinalResult!35@
 pri|1|printDict!50@
-qua|6|QuanFrame!81@quanCompoundTitle!19@quanMZExpectedTitle!19@quanAreaTitle!19@quanActualRTTitle!19@quanExpectRTTitle!19@
+qua|6|quanCompoundTitle!19@QuanFrame!81@quanMZExpectedTitle!19@quanAreaTitle!19@quanActualRTTitle!19@quanExpectRTTitle!19@
 rea|3|readTextFile!26@readTextFile!34@readTextFile!42@
 red|2|reduceName!10@reduceName!34@
 rem|2|removeInvalidCompnds!42@removeInvalidCompnds!26@
@@ -119,10 +128,10 @@ row|1|rowTitleMust!59@
 rtm|1|rtMeasuredTitle!19@
 rtr|1|rtRangeTitle!19@
 rtt|1|rtTitle!19@
-run|4|run_screen_processor!90@run_screen_processor!82@runGetTimeTest!74@runLoggerTest!74@
+run|5|run_screen_processor!90@run_lipid_process!34@runGetTimeTest!74@runLoggerTest!74@run_screen_processor!98@
 sav|1|saveOutputDataBook!34@
-scr|1|ScreenFrame!89@
-she|2|sheet1!35@sheet1Header!35@
+scr|2|ScreenFrame!89@ScreenFrame!97@
+she|4|sheet3!35@sheetHeader!35@sheet1!35@sheet2!35@
 spl|4|splitMiddlerStr!26@splitLipidionName!26@splitLipidionName!42@splitMiddlerStr!42@
 str|1|str1!11@
 tab|2|table!11@table2!11@
@@ -130,18 +139,20 @@ top|2|topRT!35@topRTRange!35@
 wri|3|writeDataToColumn!50@writeDataToRow!50@writeWordBook!50@
 -- END TREE
 -- START TREE 2
-13
-__i|3|__init__!12&82@__init__!13&90@__init__!14&74@
-bla|4|blankLabel!15&91@blankLabel!16&83@blankText!15&91@blankText!16&83@
-cou|3|counter!16&83@counter!17&83@counter!15&91@
-get|1|getLogger!14&74@
-inp|9|inputFilename!16&83@inputFilename!18&83@inputFilename!15&91@inputFilename!19&91@inputDataBook!15&91@inputDataBook!16&83@inputDataBook!17&83@inputFilePath!15&91@inputFilePath!16&83@
-isf|1|isFinishProcessed!16&83@
-lab|4|labelImageFile!16&83@labelImageFile!15&91@labelFolder!15&91@labelFolder!16&83@
-log|5|logger!15&91@logger!16&83@log_file_btn!15&91@log_file_btn!16&83@logger!20&75@
-out|10|output_folder_btn!15&91@output_folder_btn!16&83@output_filename_label!16&83@outputDataBook!16&83@outputFolderPath!16&83@output_filename_entry!15&91@output_filename_entry!16&83@outputFolderPath!15&91@outputDataBook!15&91@output_filename_label!15&91@
-run|2|run_thread!12&82@run_thread!13&90@
-sel|4|selectOutputFolder!12&82@selectInputFile!13&90@selectOutputFolder!13&90@selectInputFile!12&82@
-sta|4|start_run_btn!15&91@start_run_btn!16&83@startProcessing!13&90@startProcessing!12&82@
-tex|2|text_field!15&91@text_field!16&83@
+15
+__i|4|__init__!13&82@__init__!14&90@__init__!14&98@__init__!15&74@
+bla|8|blankText!16&99@blankText3!16&99@blankLabel!16&91@blankLabel3!16&99@blankLabel!16&99@blankText!16&91@blankText2!16&99@blankLabel2!16&99@
+cou|2|counter!16&99@counter!16&91@
+get|1|getLogger!15&74@
+inp|9|inputFilename!16&91@inputFilename!17&91@inputFilename!16&99@inputDataBook!16&91@inputFolderPath!16&91@inputFolderPath!16&99@inputDataBook!16&99@inputFolderLabel!16&99@inputFolder!16&99@
+isf|0|
+lab|3|labelImageFile!16&91@labelFolder!16&91@labelFolder!18&83@
+log|5|log_file_btn!16&99@logger!16&91@log_file_btn!16&91@logger!16&99@logger!19&75@
+ms2|2|ms2WindowEntry!16&99@ms2Windowlabel!16&99@
+out|11|outputDataBook!16&99@output_filename_entry!16&91@output_filename_entry!16&99@outputFolderPath!16&91@outputFolderLabel!16&99@output_folder_btn!16&91@outputFolderPath!16&99@output_folder_btn!16&99@output_filename_label!16&99@outputDataBook!16&91@output_filename_label!16&91@
+run|2|run_thread!14&98@run_thread!14&90@
+sel|4|selectOutputFolder!14&98@selectInputFolder!14&98@selectInputFile!14&90@selectOutputFolder!14&90@
+sta|4|start_run_btn!16&91@startProcessing!14&90@startProcessing!14&98@start_run_btn!16&99@
+tex|2|text_field!16&91@text_field!16&99@
+top|2|topRTRangeEntry!16&99@topRTRangeLabel!16&99@
 -- END TREE

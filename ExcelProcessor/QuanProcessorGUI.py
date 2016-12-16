@@ -31,8 +31,8 @@ class QuanFrame:
         frame = Frame(master,width=400,height=600)
         frame.pack()   
         
-        self.inputFilePath =StringVar()
-        self.labelFolder = Label(frame,textvariable=self.inputFilePath).grid(row=0,columnspan=2)
+        self.inpinputFolderPathtringVar()
+        self.labelFolder = Label(frame,textvariable=self.inpinputFolderPathrid(row=0,columnspan=2)
         
         self.log_file_btn = Button(frame, text="Select Quan File", command=self.selectInputFile).grid(row=1, columnspan=2)
         
@@ -91,7 +91,7 @@ class QuanFrame:
 
     def selectInputFile(self):
         filename = askopenfilename()
-        self.inputFilePath.set(filename)
+        self.inpinputFolderPatht(filename)
         self.inputFilename = filename
         
         
@@ -119,15 +119,15 @@ class QuanFrame:
         
     def run_thread(self, text_field, outputFilename):
         
-        text_field.insert(INSERT, "[%s]: Start to Process file: %s\n" % (getCurrTime(), self.inputFilePath.get()))        
+        text_field.insert(INSERT, "[%s]: Start to Process file: %s\n" % (getCurrTime(), self.inpinputFolderPatht()))        
         self.counter = self.counter + 1
         
          
         rowTitleMust = [quanExpectRTTitle, quanAreaTitle, quanCompoundTitle, quanActualRTTitle, quanMZExpectedTitle]
-        text_field.insert(INSERT, "[%s]: Start Loading Data: %s\n" %(getCurrTime(), self.inputFilePath.get()))
+        text_field.insert(INSERT, "[%s]: Start Loading Data: %s\n" %(getCurrTime(), self.inpinputFolderPatht()))
         self.counter += 1
         self.inputDataBook = loadData(self.inputFilename, self.logger, self.text_field)
-        text_field.insert(INSERT, "[%s]: Finish Loading Data: %s\n" %(getCurrTime(), self.inputFilePath.get()))
+        text_field.insert(INSERT, "[%s]: Finish Loading Data: %s\n" %(getCurrTime(), self.inpinputFolderPatht()))
         self.counter += 1
         
         #print "self.inputDataBook = ", self.inputDataBook        
@@ -159,7 +159,7 @@ class QuanFrame:
         
     
     def startProcessing(self, text_field):
-        if(self.inputFilePath.get() == ""):
+        if(self.inpinputFolderPatht() == ""):
             tkMessageBox.showerror("Error", "Please select a screen file to be processed")
             return
         if(self.outputFolderPath.get() == ""):

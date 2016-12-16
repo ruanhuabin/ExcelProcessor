@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding/LipidIonProcessor.py=utf-8
+encoding/LipidProcessorGUI.py=utf-8
 encoding/Logger.py=utf-8
 encoding/Quan.py=utf-8
 encoding/QuanProcessorGUI.py=utf-8
