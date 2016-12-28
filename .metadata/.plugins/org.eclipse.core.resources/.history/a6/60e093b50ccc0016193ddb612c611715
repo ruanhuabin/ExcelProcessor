@@ -1,0 +1,78 @@
+# encoding: utf-8
+'''
+Created on 2016��12��27��
+
+@author: ruanhuabin
+'''
+
+import glob
+import os
+from Logger import MyLogger
+import logging
+
+def getFileList(path):
+    
+    finalPath = path + "./*.jpg"
+    fileList = glob.glob(finalPath)
+    
+    return fileList
+
+problemFileList = []
+def writeFile(input, output):
+    inputFile = open(input, "rb")
+    outputFile = open(output, "wb")
+    
+    #fileSize = os.path.getsize(input);
+    totalBytesRead = 0
+    try:
+        bytes_read = inputFile.read(1024)
+        #totalBytesRead += bytes_read
+        while bytes_read:
+            outputFile.write(bytes_read)
+            bytes_read = inputFile.read(1024)
+            #totalBytesRead += bytes_read
+    except:
+        problemFileList.append(os.path.basename(input))
+        pass
+    finally:
+        inputFile.close()
+        outputFile.close()        
+    
+if __name__ == '__main__':
+    logger = MyLogger("Lipid-Logger", logging.INFO).getLogger()
+    fileList = getFileList("F:\\DCIM\\Camera")
+    print("fileList = " + str(fileList))
+    print("size = " + str(len(fileList)))
+    
+    print(os.path.dirname(fileList[0]))
+    print(os.path.basename(fileList[0]))
+    
+    
+    
+#     myfile = ['20160805_213805.jpg', '20160805_213810.jpg', '20160805_213812.jpg', '20160806_130344.jpg', '20160806_130346.jpg', '20160806_130346(0).jpg', '20160806_130347.jpg', '20160806_130347(0).jpg', '20160806_130348.jpg', '20160821_180824.jpg', '20160822_074817.jpg', '20160822_074855.jpg', '20160926_165213.jpg', '20160928_083913.jpg', '20160928_083928.jpg', '20161005_134319.jpg', '20161005_134852.jpg', '20161005_134915.jpg', '20161005_135121.jpg', '20161005_135130.jpg', '20161005_135135.jpg', '20161005_142143.jpg', '20161016_115234.jpg']
+#     print("len = " + str(len(myfile)))
+#     
+#     exit()
+    cnt = 1
+    total = len(fileList)
+    for f in fileList:
+        baseName = os.path.basename(f)
+        logger.info("Start to process file: " + baseName)
+        outputFile = "E:\\jpgs\\" + baseName
+        logger.info("output file name " + outputFile)
+        writeFile(f, outputFile)
+        logger.info("End to process file:  " + baseName + " ( " + str(cnt) + "/ " + str(total) + " )")
+        
+        cnt = cnt + 1
+        
+#         if(cnt == 5):
+#             break;
+    
+    print("problem file list = " + str(problemFileList))
+    print("problem file size = " + str(len(problemFileList)))
+        
+    
+    
+    
+    #writeFile(fileList[10], "D:\\dd.jpg")
+    

@@ -9,8 +9,6 @@ from tkFileDialog import askopenfilename
 from tkFileDialog import askdirectory
 from _functools import partial
 
-#from Screen import init
-
 from Screen import init, printDict, checkFileValid, extractCompoundNameColumn,\
     extractMZExpectColumn, genRTColumn, genLibraryScoreColumn, genIPColumn,\
     genLSColumn, genRTRangeColumn, genMZDeltaColumn, genMeasuredAreaColumn,\
@@ -18,8 +16,7 @@ from Screen import init, printDict, checkFileValid, extractCompoundNameColumn,\
 from constant import *
 from util import extractMZExpectData, writeWordBook
 import tkMessageBox
-#from Quan import loadData, extractColumnToFile
-#import thread
+
 import time
 from threading import Thread
 from Logger import MyLogger
@@ -136,17 +133,44 @@ class ScreenFrame:
         outputFolder = askdirectory()
         self.outputFolderPath.set(outputFolder)
         
-    def run_thread(self, text_field, outputFilename):
+    def run_thread(self, text_field, outputFilename):        
+        
+        ms2value = self.ms2WindowEntry.get()
+        topRTValue = self.topRTRangeEntry.get()
         
         
-        initRangeValue(0.25,0.45)
-        run_lipid_process(self, text_field)
+        text_field.insert(INSERT, "[%s]: ms2value=%s, topRTValue = %s\n" %(getCurrTime(), ms2value, topRTValue))
+        text_field.insert(INSERT, "[%s]: outputfilename = %s\n" %(getCurrTime(), outputFilename))
+        text_field.insert(INSERT, "[%s]: inputFolderpath = %s\n" %(getCurrTime(), self.inputFolderPath))
+        
+        initRangeValue(float(self.ms2WindowEntry.get()), float(self.topRTRangeEntry.get()))
+        run_lipid_process(self.inputFolderPath, outputFilename, text_field)
+        
+        self.start_run_btn.configure(state=NORMAL)
         
         exit()
         
-        text_field.insert(INSERT, "[%s]: Start to load files in folder: %s\n" % (getCurrTime(), self.inputFolderPath.get()))   
         
-        self.logger.info( "Start to load files in folder:" + self.inputFolderPath.get())     
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        text_field.insert(INSERT, "[%s]: Start to load files in folder: %s\n" % (getCurrTime(), self.inputFolderPath))   
+        
+        self.logger.info( "Start to load files in folder:" + self.inputFolderPath)     
         
         
          
@@ -244,12 +268,6 @@ class ScreenFrame:
         newThread = Thread(target = self.run_thread, args=(text_field, outputFilename))
         newThread.start()
           
-       
-               
-       
-
-
-
 def run_screen_processor():  
     mainFrame = Tk()
     mainFrame.title("Lipid Data Processor")

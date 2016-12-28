@@ -1,0 +1,13 @@
+'''
+Created on 2016Äê12ÔÂ27ÈÕ
+
+@author: ruanhuabin
+'''
+def getFileList(path):
+    
+    finalPath = path + "./*.txt"
+    fileList = glob.glob(finalPath)
+    
+    return fileList
+if __name__ == '__main__':
+    pass

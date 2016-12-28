@@ -1,0 +1,59 @@
+# encoding: utf-8
+'''
+Created on 2016��12��27��
+
+@author: ruanhuabin
+'''
+
+import glob
+import os
+from Logger import MyLogger
+import logging
+
+def getFileList(path):
+    
+    finalPath = path + "./*.jpg"
+    fileList = glob.glob(finalPath)
+    
+    return fileList
+
+def writeFile(input, output):
+    inputFile = open(input, "rb")
+    outputFile = open(output, "wb")
+    
+    try:
+        bytes_read = inputFile.read(1024)
+        while bytes_read:
+            outputFile.write(bytes_read)
+            bytes_read = inputFile.read(1024)
+    except:
+        pass
+    finally:
+        inputFile.close()
+        outputFile.close()        
+    
+if __name__ == '__main__':
+    logger = MyLogger("Lipid-Logger", logging.INFO).getLogger()
+    fileList = getFileList("F:\\DCIM\\Camera")
+    print("fileList = " + str(fileList))
+    print("size = " + str(len(fileList)))
+    
+    print(os.path.dirname(fileList[0]))
+    print(os.path.basename(fileList[0]))
+    
+    
+    cnt = 1
+    total = len(fileList)
+    for f in fileList:
+        baseName = os.path.basename(f)
+        logger.info("Start to process file: " + baseName)
+        outputFile = "E:\\jpgs\\" + baseName
+        logger.info("output file name " + outputFile)
+        writeFile(f, outputFile)
+        logger.info("End to process file:  " + baseName + " ( " + str(cnt) + "/ " + str(total) + " )")
+        
+    
+    
+    
+    #writeFile(fileList[10], "D:\\dd.jpg")
+    

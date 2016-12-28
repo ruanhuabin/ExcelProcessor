@@ -1,0 +1,17 @@
+'''
+Created on 2016Äê12ÔÂ27ÈÕ
+
+@author: ruanhuabin
+'''
+
+import glob
+def getFileList(path):
+    
+    finalPath = path + "./*.jpg"
+    fileList = glob.glob(finalPath)
+    
+    return fileList
+if __name__ == '__main__':
+    fileList = getFileList("")
+    print("fileList = " + str(fileList))
+    pass

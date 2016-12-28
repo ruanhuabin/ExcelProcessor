@@ -26,9 +26,6 @@ def nonBlankLines(f):
         if line and line[0] != '#':
             yield line
 
-
-
-
 def readTextFile(fileName): 
     content = []  
     with open(fileName) as f:
@@ -1355,24 +1352,28 @@ def getCurrTime():
     return strTime
 
 def initRangeValue(ms2WindowValue, topRTRangeValue):
+    global ms2Window 
     ms2Window = ms2WindowValue
+    global topRTRange
     topRTRange = topRTRangeValue;
     
-def run_lipid_process(self, textField):
+def run_lipid_process(inputFolderPath, outputFilename, textField):
     
     #得到目录./lipddata下的所有文件的内容，以dict的形式组织，该dict的key是文件名，value是文件的内容，文件的内容又
     #以dict的形式进行组织，key是对应文件中的每1列的标题，value是该列对应的内容
     
-    textField.insert('insert', "[%s]: Start to load files in folder: %s\n" % (getCurrTime(), self.inputFolderPath.get()))
+    textField.insert('insert', "[%s]: Start to load files in folder: %s\n" % (getCurrTime(), inputFolderPath))
     
-    textField.insert('insert', "[%s]: Start to load files in folder: %s\n" % (getCurrTime(), str(ms2Window)))
+    textField.insert('insert', "[%s]: Initial ms2Window value is: %s\n" % (getCurrTime(), str(ms2Window)))
     
-    textField.insert('insert', "[%s]: Start to load files in folder: %s\n" % (getCurrTime(), str(topRTRange)))
-        
+    textField.insert('insert', "[%s]: Initial topRTRange value is: %s\n" % (getCurrTime(), str(topRTRange)))
+    
+    textField.insert('insert', "[%s]: Start to load files in folder: %s\n" % (getCurrTime(), inputFolderPath))    
     logger.info("Start to load data");
-    #dataBook = loadAllTextFile("./lipiddata", logger)    
+    #dataBook = loadAllTextFile(inputFolderPath, logger)    
     dataBook = makeTestData()
     logger.info("End to load data")
+    textField.insert('insert', "[%s]: End load files in folder: %s\n" % (getCurrTime(), inputFolderPath))
     
     logger.info("Start to make databook as tuple list")
     lipidInfo = makeTuple(dataBook)
@@ -1589,7 +1590,7 @@ def run_lipid_process(self, textField):
         
             
     logger.info("Start to write line data to output file")
-    saveOutputDataBook(wordbook=newDataBook, output="lipid.xlsx")
+    saveOutputDataBook(wordbook=newDataBook, output=outputFilename)
     logger.info("End to write line data to output file")
     
     excelProcess = popen4("start excel D:\workspace-excelprocess-final\ExcelProcessor/lipid.xlsx")
