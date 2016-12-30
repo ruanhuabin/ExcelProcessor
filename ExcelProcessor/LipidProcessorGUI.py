@@ -141,10 +141,10 @@ class ScreenFrame:
         
         text_field.insert(INSERT, "[%s]: ms2value=%s, topRTValue = %s\n" %(getCurrTime(), ms2value, topRTValue))
         text_field.insert(INSERT, "[%s]: outputfilename = %s\n" %(getCurrTime(), outputFilename))
-        text_field.insert(INSERT, "[%s]: inputFolderpath = %s\n" %(getCurrTime(), self.inputFolderPath))
+        text_field.insert(INSERT, "[%s]: inputFolderpath = %s\n" %(getCurrTime(), self.inputFolderPath.get()))
         
         initRangeValue(float(self.ms2WindowEntry.get()), float(self.topRTRangeEntry.get()))
-        run_lipid_process(self.inputFolderPath, outputFilename, text_field)
+        run_lipid_process(self.inputFolderPath.get(), outputFilename, text_field)
         
         self.start_run_btn.configure(state=NORMAL)
         

@@ -1,17 +1,17 @@
 -- VERSION_4
 -- START DISKCACHE_2
 D:\workspace-excelprocess-final\.metadata\.plugins\org.eclipse.core.resources\.projects\ExcelProcessor\com.python.pydev.analysis\v2_indexcache
-LipidIonProcessor|1482741144910307000|D:\workspace-excelprocess-final\ExcelProcessor\LipidIonProcessor.py
+LipidIonProcessor|1483070345528216000|D:\workspace-excelprocess-final\ExcelProcessor\LipidIonProcessor.py
 constant|1477640742758943000|D:\workspace-excelprocess-final\ExcelProcessor\constant.py
 lipid2|1480406280840525000|D:\workspace-excelprocess-final\ExcelProcessor\lipid2.py
 Screen|1476157291869967000|D:\workspace-excelprocess-final\ExcelProcessor\Screen.py
 Logger|1474183271210462000|D:\workspace-excelprocess-final\ExcelProcessor\Logger.py
 lipid|1480405846134725000|D:\workspace-excelprocess-final\ExcelProcessor\lipid.py
 util|1474184225911258000|D:\workspace-excelprocess-final\ExcelProcessor\util.py
-LipidProcessorGUI|1482741267379489000|D:\workspace-excelprocess-final\ExcelProcessor\LipidProcessorGUI.py
+LipidProcessorGUI|1482894247239166000|D:\workspace-excelprocess-final\ExcelProcessor\LipidProcessorGUI.py
 Test|1481250711887244000|D:\workspace-excelprocess-final\ExcelProcessor\Test.py
 Quan|1474169046656086000|D:\workspace-excelprocess-final\ExcelProcessor\Quan.py
-rwImage|1482825513888755000|D:\workspace-excelprocess-final\ExcelProcessor\rwImage.py
+rwImage|1482826574283598000|D:\workspace-excelprocess-final\ExcelProcessor\rwImage.py
 ScreenProcessorGUI|1481874439216786000|D:\workspace-excelprocess-final\ExcelProcessor\ScreenProcessorGUI.py
 QuanProcessorGUI|1481874439192774000|D:\workspace-excelprocess-final\ExcelProcessor\QuanProcessorGUI.py
 -- END DISKCACHE
@@ -39,7 +39,7 @@ QuanProcessorGUI|1481874439192774000|D:\workspace-excelprocess-final\ExcelProces
 11=QuanProcessorGUI
 -- END DICTIONARY
 -- START TREE 1
-103
+106
 a|1|a!11@
 add|2|addValueToDict!10@adductTitle!19@
 all|1|allc!27@
@@ -59,7 +59,7 @@ cgd|2|cgDict!27@cgDict!43@
 che|5|check1!42@checkIncludeABCD!42@check1!26@checkFileValid!58@checkIncludeABCD!26@
 chk|2|chkAndGetBeyondRangeData!42@chkAndGetBeyondRangeData!26@
 cnt|2|cnt!35@cnt!51@
-com|6|compndNames!27@combineLipidInfo!34@compoundNameTitle!19@compndNames!43@compnd2dot1Info!27@compnd2dot1Info!43@
+com|7|compndNames!27@combineLipidInfo!34@compoundNameTitle!19@compndNames!43@compndName!35@compnd2dot1Info!27@compnd2dot1Info!43@
 con|1|confirmedTitle!19@
 cre|2|createOutputDataBook!34@createOutputWordBook!58@
 cto|2|cTopRTDict!27@cTopRTDict!43@
@@ -73,7 +73,7 @@ for|2|formula!35@formulaTitle!19@
 fra|1|fragmentTitle!19@
 g_r|1|g_rtValue!67@
 gen|9|genRTRangeColumn!66@genMeasuredAreaColumn!66@genRTMeasuredColumn!66@genFullName!34@genRTColumn!66@genLibraryScoreColumn!66@genLSColumn!66@genMZDeltaColumn!66@genIPColumn!66@
-get|47|getMSCoreMap!34@getFinalC2TopRTMap!34@getFormulaMap!34@getTwoPairNumCompnd!26@getGroupNum!10@getFinalNeedToCombine!42@getCurrTime!34@getCompndNameAndFormula!42@getGroupNum!42@getCompndNameAndSpecifyColumn!26@getFinalC2AreaMap!34@get2dot1CompndInfo!26@getKey!10@getInfoInPare!34@getGroupNum2!10@getGradeMap!34@getNumberStr!42@getFileList!26@getCompndInRange!26@getC2MScore!34@getNumberStr!26@getCurrTime!58@getCompndNameAndGrades!42@getAreaMap2!34@getCompndNameAndGrades!26@getCompndNeedToCombine!26@getCompndInRange!42@getTwoPairNumCompnd!42@getFileList!50@getFinalC2MSCoreMap!34@get2dot1CompndInfo!42@getCompndWithSameFormula!42@getSortedKey!34@getCompndNameAndSpecifyColumn!42@getCompndNameAndFormula!26@getFileList!34@getFileList!42@getFinalNeedToCombine!26@getCompndNeedToCombine!42@getGroupNum!34@getCompndNameAndTopRT!26@getObsMZMap!34@getKey!66@getGroupNum!26@getCompndWithSameFormula!26@getTopRTMap!34@getCompndNameAndTopRT!42@
+get|47|getMSCoreMap!34@getFinalC2TopRTMap!34@getFormulaMap!34@getTwoPairNumCompnd!26@getGroupNum!10@getFinalNeedToCombine!42@getCompndNameAndFormula!42@getGroupNum!42@getCompndNameAndSpecifyColumn!26@getCurrTime!34@getFinalC2AreaMap!34@get2dot1CompndInfo!26@getKey!10@getInfoInPare!34@getGroupNum2!10@getGradeMap!34@getNumberStr!42@getFileList!26@getCompndInRange!26@getC2MScore!34@getNumberStr!26@getCurrTime!58@getCompndNameAndGrades!42@getCompndNameAndGrades!26@getCompndNeedToCombine!26@getAreaMap2!34@getCompndInRange!42@getTwoPairNumCompnd!42@getFileList!50@get2dot1CompndInfo!42@getFinalC2MSCoreMap!34@getCompndWithSameFormula!42@getSortedKey!34@getCompndNameAndSpecifyColumn!42@getCompndNameAndFormula!26@getFileList!34@getFileList!42@getFinalNeedToCombine!26@getCompndNeedToCombine!42@getGroupNum!34@getCompndNameAndTopRT!26@getKey!66@getObsMZMap!34@getGroupNum!26@getCompndWithSameFormula!26@getTopRTMap!34@getCompndNameAndTopRT!42@
 gra|1|grades!11@
 hig|1|highLightCell!58@
 ini|3|initRangeValue!34@init!66@initWordBook!34@
@@ -90,8 +90,8 @@ l4|1|l4!11@
 l5|1|l5!11@
 lib|1|libraryScoreTitle!19@
 lin|4|lineData2!35@lineData1!35@lineData3!35@line!35@
-lip|13|lipidInfo!35@lipidInfoIn2dot4a!35@lipidFormula!19@lipidAlias!35@lipidInfoIn2dot1!35@lipidGrade!19@lipidInfoIn2dot2!35@lipidName!35@lipidCompndName!19@lipidInfoIn2dot4c!35@lipidInfoIn2dot3!35@lipidTopRT!19@lipidInfoIn2dot4b!35@
-loa|8|loadData!58@loadAllTextFile!42@loadTextFile!26@loadData!74@loadAllTextFile!26@loadAllTextFile!34@loadTextFile!42@loadTextFile!34@
+lip|13|lipidFormula!19@lipidInfo!35@lipidInfoIn2dot4a!35@lipidAlias!35@lipidInfoIn2dot1!35@lipidGrade!19@lipidInfoIn2dot2!35@lipidName!35@lipidCompndName!19@lipidInfoIn2dot4c!35@lipidTopRT!19@lipidInfoIn2dot3!35@lipidInfoIn2dot4b!35@
+loa|8|loadData!58@loadAllTextFile!42@loadTextFile!26@loadData!74@loadAllTextFile!26@loadTextFile!42@loadAllTextFile!34@loadTextFile!34@
 log|4|logger!27@logger!51@logger!35@logger!43@
 lst|1|lsTitle!19@
 mak|4|makeTuple!34@makeTestData!26@makeTestData!42@makeTestData!34@
@@ -105,11 +105,11 @@ mza|1|mzApexTitle!19@
 mzd|1|mzDeltaTitle!19@
 mze|1|mzExpectedTitle!19@
 nav|1|NAValue!19@
-new|1|newDataBook!35@
+new|2|newDataBook!35@newAvg!35@
 non|3|nonBlankLines!34@nonBlankLines!26@nonBlankLines!42@
 obs|1|ObsMz!35@
 out|1|outputFile!51@
-p2d|6|p2dot1!34@p2dot4c!34@p2dot3!34@p2dot4a!34@p2dot4b!34@p2dot2!34@
+p2d|7|p2dot1!34@p2dot1_ex!34@p2dot4c!34@p2dot3!34@p2dot4a!34@p2dot4b!34@p2dot2!34@
 p5|1|p5!34@
 p5f|1|p5FinalResult!35@
 p6|1|p6!34@
@@ -122,6 +122,7 @@ pri|1|printDict!58@
 pro|1|problemFileList!51@
 qua|6|QuanFrame!89@quanCompoundTitle!19@quanMZExpectedTitle!19@quanAreaTitle!19@quanActualRTTitle!19@quanExpectRTTitle!19@
 rea|3|readTextFile!26@readTextFile!34@readTextFile!42@
+rec|1|reCalUnMergeVals!34@
 red|2|reduceName!10@reduceName!34@
 rem|2|removeInvalidCompnds!42@removeInvalidCompnds!26@
 ren|1|renameLipid!34@
@@ -142,6 +143,8 @@ str|1|str1!11@
 tab|2|table!11@table2!11@
 top|2|topRT!35@topRTRange!35@
 tot|1|total!51@
+unm|1|unMergeVals!35@
+vld|1|vldLipid!35@
 wri|4|writeDataToColumn!58@writeFile!50@writeDataToRow!58@writeWordBook!58@
 -- END TREE
 -- START TREE 2

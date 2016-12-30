@@ -19,6 +19,7 @@ logger = MyLogger("Lipid-Logger", logging.INFO).getLogger()
 ms2Window = 0.2
 topRTRange = 0.25
 #保存合并后的名字与原始名字的映射
+#其中，key是合并后的新名字，val是合并前的名字，可能有多个，因为多个不同的名字经过合并后是相同的
 lipidAlias = {}
 def nonBlankLines(f):
     for l in f:
@@ -393,6 +394,75 @@ def getGroupNum(compndName):
     #print("semicolon = " + str(semicolon))    
     
     return len(semicolon)
+
+#重新对某个固定的化合物compndName，其没有合并toprt值进行再次合并：
+#将toprt分成两部分，高于newAvg的部分，挑选出来后重新合并，低于newAvg的部分也挑选出来，重新合并
+#合并的方式是：重新计算高于和低于newAvg部分的平均值，然后将高于和低于部分的每个元素和算出的新平均值比较，如果
+#误差小于topRTRange，则合并，大于的话，单独列出
+def reCalUnMergeVals(vldLipidInfo, compndName, newAvg, unMergeVals):    
+    smallerValues = []
+    biggerValues = []
+    
+    for v in unMergeVals:
+        if(v < newAvg):
+            smallerValues.append(v)
+        elif(v > newAvg):
+            biggerValues.append(v) 
+
+    logger.info("smallerValues = " + str(smallerValues))
+    logger.info("biggerValues = " + str(biggerValues))
+    smallerAvg = 0.0    
+    if(len(smallerValues) >= 1):
+        smallerAvg = sum(smallerValues) / len(smallerValues)
+    
+    logger.info("smallerAvg = " + str(smallerAvg))
+    biggerAvg = 0.0
+    if(len(biggerValues) >= 1):
+        biggerAvg = sum(biggerValues) / len(biggerValues)
+    logger.info("biggerAvg = " + str(biggerAvg))    
+    smallerMergeVals = []
+    smallerUnMergeVals = []
+    for v in smallerValues:
+        diff = math.fabs(v - smallerAvg)
+        if(diff <= topRTRange):
+            smallerMergeVals.append(v)
+        else:
+            smallerUnMergeVals.append(v)
+    
+    logger.info("smallerMergeVals = " + str(smallerMergeVals))
+    logger.info("smallerUnMergeVals = " + str(smallerUnMergeVals))
+    
+    biggerMergeVals = []
+    biggerUnMergeVals = []
+    for v in biggerValues:
+        diff = math.fabs(v - biggerAvg)
+        if(diff <= topRTRange):
+            biggerMergeVals.append(v)
+        else:
+            biggerUnMergeVals.append(v)
+            
+    logger.info("biggerMergeVals = " + str(biggerMergeVals))
+    logger.info("biggerUnMergeVals = " + str(biggerUnMergeVals))
+    newSmallerAvg = 0.0
+    if(len(smallerMergeVals) > 1):
+        newSmallerAvg = sum(smallerMergeVals) / len(smallerMergeVals)
+        item = (compndName, newSmallerAvg)
+        vldLipidInfo.append(item)
+    
+    logger.info("newSmallerAvg = " + str(newSmallerAvg))
+    newBiggerAvg = 0.0
+    if(len(biggerMergeVals) > 1):
+        newBiggerAvg = sum(biggerMergeVals) / len(biggerMergeVals)
+        item = (compndName, newBiggerAvg)
+        vldLipidInfo.append(item)
+        
+    logger.info("newBiggerAvg = " + str(newBiggerAvg))
+    
+    for v in smallerUnMergeVals:
+        vldLipidInfo.append((compndName, v))
+    
+    for v in biggerUnMergeVals:
+        vldLipidInfo.append((compndName, v))
 #提取符合条件2.1的(化合物,toprt)，同时将该化合物信息从候选的lipidInfo中剔除
 def p2dot1(f2c, c2TopRTAvg, c2TopRT):
     
@@ -428,12 +498,64 @@ def p2dot1(f2c, c2TopRTAvg, c2TopRT):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((n, newAvg))
             
+            #对于与均值的误差大于TopRTRange的值，分成2部分处理，一部分是小于新的均值的部分，一部分是大于新的均值的部分
+            #对于小于新的均值的部分，重新计算平均值v，然后计算小于newAvg部分的toprt值 与v的差diff2，如果diff2还是小于topRTRange，则合并，如果大于的话，则不合并
+            #对于大于新的均值的部分L2，重新计算L2的平均值V2，然后计算出L2中每个值与V2的差diff3，如果diff3小于topRTRange，则合并，如果大于的话，则不合并，单独列出。
             for value in unMergeValues:
                 vldLipidInfo.append((n, value))
                     
                     
     logger.debug("End to process lipid info with only one group num")                
-    return vldLipidInfo        
+    return vldLipidInfo
+
+
+    
+
+#提取符合条件2.1的(化合物,toprt)，同时将该化合物信息从候选的lipidInfo中剔除
+def p2dot1_ex(f2c, c2TopRTAvg, c2TopRT):
+    
+    
+    logger.debug("Start to process lipid info with only one group num")
+    vldLipidInfo = []
+    
+    
+    for (k, v) in f2c.iteritems():
+        lipidNames = list(v)
+        for n in lipidNames:
+            grpNum = getGroupNum(n)
+            if(grpNum > 1):
+                continue
+            
+            #处理只有1组数字对的情况
+            lipidAvg = c2TopRTAvg[n]
+            topRTs = c2TopRT[n]
+            
+            #保存需要重新计算平均值的topRT值
+            mergeValues = []
+            #保存需要单独保存的topRT值
+            unMergeValues = []
+            for topRT in topRTs:
+                diff = math.fabs(topRT - lipidAvg)
+                
+                if(diff <= topRTRange):
+                    mergeValues.append(topRT)
+                else:
+                    unMergeValues.append(topRT)
+            
+            newAvg = 0.0;
+            if(len(mergeValues) >= 1):
+                newAvg = sum(mergeValues) / len(mergeValues)
+                vldLipidInfo.append((n, newAvg))
+            
+            #对于与均值的误差大于TopRTRange的值，分成2部分处理，一部分是小于新的均值的部分，一部分是大于新的均值的部分
+            #对于小于新的均值的部分，重新计算平均值v，然后计算小于newAvg部分的toprt值 与v的差diff2，如果diff2还是小于topRTRange，则合并，如果大于的话，则不合并
+            #对于大于新的均值的部分L2，重新计算L2的平均值V2，然后计算出L2中每个值与V2的差diff3，如果diff3小于topRTRange，则合并，如果大于的话，则不合并，单独列出。
+            for value in unMergeValues:
+                vldLipidInfo.append((n, value))
+                    
+                    
+    logger.debug("End to process lipid info with only one group num")                
+    return vldLipidInfo       
         
 #拿到化合物括号中的数字对等信息
 def getInfoInPare(lipidName):
@@ -1115,8 +1237,13 @@ def p6(finalLipidInfo, vldLipidAreaInfo, dataBook):
                 key1 = (lipidName, f)
                 key2 = (n, f)
                 
-                if(finalAreaInfo.has_key(key1)):
+                if(finalAreaInfo.has_key(key1)):                    
                     if(vldLipidAreaInfo.has_key(key2)):
+#                         logger.info("Shold never be run here")
+#                         logger.info("key1 = " + str(key1))
+#                         logger.info("key2 = " + str(key2))
+#                         logger.info("lipidNames:" + str(lipidNames))
+#                         exit()
                         finalAreaInfo[key1] = finalAreaInfo[key1] + vldLipidAreaInfo[key2]
                     else:
                         finalAreaInfo[key1] = finalAreaInfo[key1]                        
@@ -1376,82 +1503,120 @@ def run_lipid_process(inputFolderPath, outputFilename, textField):
     textField.insert('insert', "[%s]: End load files in folder: %s\n" % (getCurrTime(), inputFolderPath))
     
     logger.info("Start to make databook as tuple list")
+    textField.insert('insert', "[%s]: Start to make databook as tuple list\n" % (getCurrTime()))
     lipidInfo = makeTuple(dataBook)
+    textField.insert('insert', "[%s]: End to make databook as tuple list\n" % (getCurrTime()))
     logger.info("End to make databook as tuple list")
     
     logger.info("Start to remove item that the gap between RT and TopRT is bigger than ms2Window(0.2)")
+    textField.insert('insert', "[%s]: Start to remove item that the gap between RT and TopRT is bigger than ms2Window( %f )\n" % (getCurrTime(), ms2Window))
     lipidInfo = rm0dot2(lipidInfo)
+    textField.insert('insert', "[%s]: End to remove item that the gap between RT and TopRT is bigger than ms2Window( %f )\n" % (getCurrTime(), ms2Window))
     logger.info("End to remove item that the gap between RT and TopRT is bigger than ms2Window(0.2)")
     
     logger.info("Start to calculate Average of toprt values")
+    textField.insert('insert',"[%s]: Start to calculate Average of toprt values\n"% (getCurrTime()))
     (c2TopRTAvg, c2TopRT) = calTopRTAvg(lipidInfo)
+    textField.insert('insert',"[%s]: End to calculate Average of toprt values\n"% (getCurrTime()))
     logger.info("End to calculate Average of toprt values")
     
     logger.info("Start to calculate f->c and c->f map")
+    textField.insert('insert',"[%s]: Start to calculate f->c and c->f map\n"% (getCurrTime()))
     (f2c,c2f) = getFormulaMap(lipidInfo)
+    textField.insert('insert',"[%s]: End to calculate f->c and c->f map\n"% (getCurrTime()))
     logger.info("End to calculate f->c and c->f map")
     
     logger.info("Start to calculate c->grade map")
+    textField.insert('insert',"[%s]: Start to calculate c->grade map\n"% (getCurrTime()))
     c2Grade = getGradeMap(lipidInfo)
+    textField.insert('insert',"[%s]: End to calculate c->grade map\n"% (getCurrTime()))
     logger.info("End to calculate c->grade map")
     
     logger.info("Start to process 2dot1")
+    textField.insert('insert',"[%s]: Start to process 2dot1\n"% (getCurrTime()))
     lipidInfoIn2dot1 = p2dot1(f2c, c2TopRTAvg,c2TopRT)
+    textField.insert('insert',"[%s]: End to process 2dot1\n"% (getCurrTime()))
     logger.info("End to process 2dot1")
     
     logger.info("Start to process 2dot2")
+    textField.insert('insert',"[%s]: Start to process 2dot2\n"% (getCurrTime()))
     lipidInfoIn2dot2 = p2dot2(f2c, c2TopRT)
+    textField.insert('insert',"[%s]: End to process 2dot2\n"% (getCurrTime()))
     logger.info("End to process 2dot2")
     
     logger.info("Start to process 2dot3")
+    textField.insert('insert',"[%s]: Start to process 2dot3\n"% (getCurrTime()))
     lipidInfoIn2dot3 = p2dot3(f2c, c2TopRT)
+    textField.insert('insert',"[%s]: End to process 2dot3\n"% (getCurrTime()))
     logger.info("End to process 2dot3")
     
 
     logger.info("Start to remove lipid name in step 2.1, 2.2,2.3")
+    textField.insert('insert',"[%s]: Start to remove lipid name in step 2.1, 2.2,2.3\n"% (getCurrTime()))
     rmLipidNameIn2dot123(f2c, c2TopRTAvg, c2TopRT, c2Grade)
+    textField.insert('insert',"[%s]: End to remove lipid name in step 2.1, 2.2,2.3\n"% (getCurrTime()))
     logger.info("End to remove lipid name in step 2.1, 2.2,2.3")
     
     logger.info("Start to process 2dot4a")
+    textField.insert('insert',"[%s]: Start to process 2dot4a\n"% (getCurrTime()))
     lipidInfoIn2dot4a = p2dot4a(f2c, c2TopRTAvg, c2TopRT, c2Grade)
+    textField.insert('insert',"[%s]: End to process 2dot4a\n"% (getCurrTime()))
     logger.info("End to process 2dot4a")
     
     logger.info("Start to process 2dot4b")
+    textField.insert('insert',"[%s]: Start to process 2dot4b\n"% (getCurrTime()))
     lipidInfoIn2dot4b = p2dot4b(f2c, c2TopRTAvg, c2TopRT, c2Grade)
+    textField.insert('insert',"[%s]: End to process 2dot4b\n"% (getCurrTime()))
     logger.info("End to process 2dot4b")
     
     logger.info("Start to process 2dot4c")
+    textField.insert('insert',"[%s]: Start to process 2dot4c\n"% (getCurrTime()))
     lipidInfoIn2dot4c = p2dot4c(f2c, c2TopRTAvg, c2TopRT, c2Grade)
+    textField.insert('insert',"[%s]: End to process 2dot4c\n"% (getCurrTime()))
     logger.info("End to process 2dot4c")
     
     
     logger.info("Start to get c->obsmz map")
+    textField.insert('insert',"[%s]: Start to get c->obsmz map\n"% (getCurrTime()))
     c2om = getObsMZMap(lipidInfo)
+    textField.insert('insert',"[%s]: End to get c->obsmz map\n"% (getCurrTime()))
     logger.info("End to get c->obsmz map")
     #将上面所有lipidInfo[num]dot[num]的化合物归并到一起，list中的每个元素是一个元组(lipidName, formula, ObsMZ, TopRT ...)
     logger.info("Start to combine all lipind info together")
+    textField.insert('insert',"[%s]: Start to combine all lipind info together\n"% (getCurrTime()))
     finalLipidInfo = combineLipidInfo(lipidInfoIn2dot1, lipidInfoIn2dot2, lipidInfoIn2dot3, lipidInfoIn2dot4a, lipidInfoIn2dot4b, lipidInfoIn2dot4c, c2f, c2om)
+    textField.insert('insert',"[%s]: End to combine all lipind info together\n"% (getCurrTime()))
     logger.info("End to combine all lipind info together")
     #pprint.pprint(finalLipidInfo)
     logger.info("Start to get (c,filename) -> area map")
+    textField.insert('insert',"[%s]: Start to get (c,filename) -> area map\n"% (getCurrTime()))
     c2Areas = getFinalC2AreaMap(lipidInfo)
+    textField.insert('insert',"[%s]: End to get (c,filename) -> area map\n"% (getCurrTime()))
     logger.info("End to get (c,filename) -> area map")
     
     logger.info("Start to get (c,filename) -> mscore map")
+    textField.insert('insert',"[%s]: Start to get (c,filename) -> mscore map\n"% (getCurrTime()))
     c2MSCores = getFinalC2MSCoreMap(lipidInfo)
+    textField.insert('insert',"[%s]: End to get (c,filename) -> mscore map\n"% (getCurrTime()))
     logger.info("End to get (c,filename) -> mscore map")
     
     logger.info("Start to get (c,filename) -> toprt map")
+    textField.insert('insert',"[%s]: Start to get (c,filename) -> toprt map\n"% (getCurrTime()))
     c2TopRTs = getFinalC2TopRTMap(lipidInfo)
+    textField.insert('insert',"[%s]: End to get (c,filename) -> toprt map\n"% (getCurrTime()))
     logger.info("End to get (c,filename) -> toprt map")
     
-    logger.info("Start to get c->mScore mapp")
+    logger.info("Start to get c->mScore map")
+    textField.insert('insert',"[%s]: Start to get c->mScore map\n"% (getCurrTime()))
     c2ms = getC2MScore(lipidInfo)
+    textField.insert('insert',"[%s]: End to get c->mScore map\n"% (getCurrTime()))
     logger.info("c2ms = " + str(c2ms))
     logger.info("End to get c->mScore mapp")
     
     logger.info("Start to process 5")
+    textField.insert('insert',"[%s]: Start to process 5\n"% (getCurrTime()))
     (p5c2msScore, p5c2MaxMSScore) = p5(finalLipidInfo,c2ms)
+    textField.insert('insert',"[%s]: End to process 5\n"% (getCurrTime()))
     p5FinalResult = p5c2MaxMSScore
     logger.info("c2msScoreFinal = " + str(p5c2msScore))
     logger.info("c2MaxMSFinal = " + str(p5c2MaxMSScore))
@@ -1461,28 +1626,39 @@ def run_lipid_process(inputFolderPath, outputFilename, textField):
     
     #p6FinalResult中key是(化合物名，文件名)，value是化合物在该文件中的Area值。
     logger.info("Start to process 6")
+    textField.insert('insert',"[%s]: Start to process 6\n"% (getCurrTime()))
     p6FinalResult = p6(finalLipidInfo, c2Areas, dataBook)
+    textField.insert('insert',"[%s]: End to process 6\n"% (getCurrTime()))
     logger.info("End to process 6")
     
     logger.info("Start to process 7")
+    textField.insert('insert',"[%s]: Start to process 7\n"% (getCurrTime()))
     p7FinalResult = p7(finalLipidInfo, c2MSCores, dataBook)
+    textField.insert('insert',"[%s]: End to process 7\n"% (getCurrTime()))
     logger.info("End to process 7")
     
     logger.info("Start to process 8")
+    textField.insert('insert',"[%s]: Start to process 8\n"% (getCurrTime()))
     p8FinalResult = p8(finalLipidInfo, c2TopRTs, dataBook)
+    textField.insert('insert',"[%s]: End to process 8\n"% (getCurrTime()))
     logger.info("End to process 8")
     
     #现在需要做的事情是构造表头，内容为：lipid，Formula，ObsMZ，TopRT，文件名1,文件名2, .....
     logger.info("Start to sort the final lipid info")
+    textField.insert('insert',"[%s]: Start to sort the final lipid info\n"% (getCurrTime()))
     finalLipidInfo.sort(cmp=None, key=getSortedKey, reverse=False)
+    textField.insert('insert',"[%s]: End to sort the final lipid info\n"% (getCurrTime()))
     logger.info("End to sort the final lipid info")
     
     logger.info("Start to sort file names")
+    textField.insert('insert',"[%s]: Start to sort file names\n"% (getCurrTime()))
     fileNames = sorted(list(dataBook))
+    textField.insert('insert',"[%s]: End to sort file names\n"% (getCurrTime()))
     logger.info("End to sort file names")
     
     
-    logger.info("Start to write line data to output file")
+    #logger.info("Start to write line data to output file")
+    #textField.insert('insert',"[%s]: Start to write line data to output file\n"% (getCurrTime()))
     sheetHeader = ["Lipid", "Formula", "ObsMZ", "TopRT", "Max m-Score"] + fileNames
     
     
@@ -1589,16 +1765,18 @@ def run_lipid_process(inputFolderPath, outputFilename, textField):
         cnt  = cnt + 1
         
             
-    logger.info("Start to write line data to output file")
+    logger.info("Start to write line data to output file: " + outputFilename)
+    textField.insert('insert',"[%s]: Start to write line data to output file: %s\n"% (getCurrTime(), outputFilename))
     saveOutputDataBook(wordbook=newDataBook, output=outputFilename)
-    logger.info("End to write line data to output file")
+    textField.insert('insert',"[%s]: End to write line data to output file: %s\n"% (getCurrTime(), outputFilename))
+    logger.info("End to write line data to output file : " + outputFilename)
     
-    excelProcess = popen4("start excel D:\workspace-excelprocess-final\ExcelProcessor/lipid.xlsx")
-    print("Enter to finish")
-    import sys
-    line = sys.stdin.readline()
-    #sleep(100)
-    Popen("taskkill /F /im EXCEL.EXE",shell=True)
+#     excelProcess = popen4("start excel D:\workspace-excelprocess-final\ExcelProcessor/lipid.xlsx")
+#     print("Enter to finish")
+#     import sys
+#     line = sys.stdin.readline()
+#     #sleep(100)
+#     Popen("taskkill /F /im EXCEL.EXE",shell=True)
     
        
 if __name__ == '__main__':
@@ -1606,12 +1784,24 @@ if __name__ == '__main__':
 #     run_lipid_process()
 #      
 #     exit()
+    
+    
+#     newAvg = 3.0
+#     compndName = "n"
+#     vldLipid = [(compndName, 0.999)]
+#     
+#     unMergeVals = [1.2,2.2,2.4,2.6,2.8,3.0, 3.2,3.4,3.6,3.8,4.0,4.2,4.5]
+#     
+#     reCalUnMergeVals(vldLipid, compndName, newAvg, unMergeVals)
+#     logger.info("vldLipid " + str(vldLipid))
+#     
+#     exit()
         
     #得到目录./lipddata下的所有文件的内容，以dict的形式组织，该dict的key是文件名，value是文件的内容，文件的内容又
     #以dict的形式进行组织，key是对应文件中的每1列的标题，value是该列对应的内容
     logger.info("Start to load data");
-    #dataBook = loadAllTextFile("./lipiddata", logger)    
-    dataBook = makeTestData()
+    dataBook = loadAllTextFile("./lipiddata", logger)    
+    #dataBook = makeTestData()
     logger.info("End to load data")
     
     logger.info("Start to make databook as tuple list")
@@ -1674,7 +1864,13 @@ if __name__ == '__main__':
     #pprint.pprint(finalLipidInfo)
     logger.info("Start to get (c,filename) -> area map")
     c2Areas = getFinalC2AreaMap(lipidInfo)
+    
     logger.info("End to get (c,filename) -> area map")
+    
+    
+    
+    
+    
     
     logger.info("Start to get (c,filename) -> mscore map")
     c2MSCores = getFinalC2MSCoreMap(lipidInfo)
@@ -1832,6 +2028,8 @@ if __name__ == '__main__':
     saveOutputDataBook(wordbook=newDataBook, output="lipid.xlsx")
     logger.info("End to write line data to output file")
     
+    
+    logger.info("c2Areas = " + str(c2Areas))
     
     excelProcess = popen4("start excel D:\workspace-excelprocess-final\ExcelProcessor/lipid.xlsx")
     print("Enter to finish")
