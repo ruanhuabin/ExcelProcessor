@@ -206,6 +206,12 @@ if __name__ == '__main__':
     l5.append([x for x in l1])
     print l5
     
+    
+    
+    t4 = {}
+    t4["123"] = [1,2,3]
+    v = t4["1234"]
+    print("v = " + str(v))
 #     num =  getGroupNum('TG(9:0/9:0/19:4)+NH4')
 #     print("num = " + str(num))
     

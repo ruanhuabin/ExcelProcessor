@@ -501,8 +501,10 @@ def p2dot1(f2c, c2TopRTAvg, c2TopRT):
             #对于与均值的误差大于TopRTRange的值，分成2部分处理，一部分是小于新的均值的部分，一部分是大于新的均值的部分
             #对于小于新的均值的部分，重新计算平均值v，然后计算小于newAvg部分的toprt值 与v的差diff2，如果diff2还是小于topRTRange，则合并，如果大于的话，则不合并
             #对于大于新的均值的部分L2，重新计算L2的平均值V2，然后计算出L2中每个值与V2的差diff3，如果diff3小于topRTRange，则合并，如果大于的话，则不合并，单独列出。
-            for value in unMergeValues:
-                vldLipidInfo.append((n, value))
+            
+            reCalUnMergeVals(vldLipidInfo, n, newAvg, unMergeValues)
+#             for value in unMergeValues:
+#                 vldLipidInfo.append((n, value))
                     
                     
     logger.debug("End to process lipid info with only one group num")                
@@ -550,8 +552,9 @@ def p2dot1_ex(f2c, c2TopRTAvg, c2TopRT):
             #对于与均值的误差大于TopRTRange的值，分成2部分处理，一部分是小于新的均值的部分，一部分是大于新的均值的部分
             #对于小于新的均值的部分，重新计算平均值v，然后计算小于newAvg部分的toprt值 与v的差diff2，如果diff2还是小于topRTRange，则合并，如果大于的话，则不合并
             #对于大于新的均值的部分L2，重新计算L2的平均值V2，然后计算出L2中每个值与V2的差diff3，如果diff3小于topRTRange，则合并，如果大于的话，则不合并，单独列出。
-            for value in unMergeValues:
-                vldLipidInfo.append((n, value))
+            reCalUnMergeVals(vldLipidInfo, n, newAvg, unMergeValues)
+            #for value in unMergeValues:
+            #    vldLipidInfo.append((n, value))
                     
                     
     logger.debug("End to process lipid info with only one group num")                
@@ -667,8 +670,9 @@ def p2dot2(f2c, c2TopRT):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((newLipidName, newAvg))
             
-            for value in unMergeValues:
-                vldLipidInfo.append((newLipidName, value))
+            reCalUnMergeVals(vldLipidInfo, newLipidName, newAvg, unMergeValues)
+            #for value in unMergeValues:
+            #    vldLipidInfo.append((newLipidName, value))
             
             
             
@@ -790,8 +794,10 @@ def p2dot3(f2c, c2TopRT):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((newLipidName, newAvg))
             
-            for value in unMergeValues:
-                vldLipidInfo.append((newLipidName, value))
+            
+            reCalUnMergeVals(vldLipidInfo, newLipidName, newAvg, unMergeValues)
+            #for value in unMergeValues:
+            #    vldLipidInfo.append((newLipidName, value))
             
             
             
@@ -919,8 +925,9 @@ def p2dot4a(f2c, c2TopRTAvg, c2TopRT, c2Grade):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((n, newAvg))
             
-            for value in unMergeValues:
-                vldLipidInfo.append((n, value))
+            reCalUnMergeVals(vldLipidInfo, n, newAvg, unMergeValues)
+            #for value in unMergeValues:
+            #    vldLipidInfo.append((n, value))
                 
                 
     
@@ -1001,8 +1008,9 @@ def p2dot4b(f2c, c2TopRTAvg, c2TopRT, c2Grade):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((newLipidName, newAvg))
             
-            for value in unMergeValues:
-                vldLipidInfo.append((newLipidName, value))
+            reCalUnMergeVals(vldLipidInfo, newLipidName, newAvg, unMergeValues)
+            #for value in unMergeValues:
+            #    vldLipidInfo.append((newLipidName, value))
             
             
             
@@ -1113,8 +1121,9 @@ def p2dot4c(f2c, c2TopRTAvg, c2TopRT, c2Grade):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((newFullName, newAvg))
             
-            for value in unMergeValues:
-                vldLipidInfo.append((newFullName, value))
+            reCalUnMergeVals(vldLipidInfo, newFullName, newAvg, unMergeValues)
+            #for value in unMergeValues:
+            #    vldLipidInfo.append((newFullName, value))
             
             
             
@@ -1981,7 +1990,32 @@ if __name__ == '__main__':
                     area = area + a + "/"
             
             if(area[-1] == "/"):
-                area = area[0:-1]    
+                area = area[0:-1]
+                
+            #如果这个化合物的平均toprt值和当前文件中的toprt值的差大于topRTRange的话，area值还是赋值为null
+            currTopRT = topRT
+            topRTInCurrFile = [-1000.0]
+            #topRTInCurrFileFinal = -1000.0
+            if(lipidAlias.has_key(lipidName) == False):
+                if(c2TopRTs.has_key((lipidName, f))):
+                    topRTInCurrFile = c2TopRTs[(lipidName, f)]
+            else:
+                origNames = lipidAlias[lipidName]
+                for item in origNames:
+                    key = (item, f)
+                    if(c2TopRTs.has_key(key)):
+                        topRTInCurrFile = c2TopRTs[key]
+                        break
+            
+            
+            topRTInCurrFileFinal = float(topRTInCurrFile[0])
+            
+            diff = math.fabs(float(currTopRT) - topRTInCurrFileFinal)
+            if(diff > topRTRange):
+                area = "null"
+                         
+            
+            
             lineData1.append(area)
             
             
