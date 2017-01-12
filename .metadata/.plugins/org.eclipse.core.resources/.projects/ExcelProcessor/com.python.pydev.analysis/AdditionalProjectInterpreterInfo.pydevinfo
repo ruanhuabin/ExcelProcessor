@@ -6,9 +6,9 @@ lipid2|1480406280840525000|D:\workspace-excelprocess-final\ExcelProcessor\lipid2
 Screen|1476157291869967000|D:\workspace-excelprocess-final\ExcelProcessor\Screen.py
 Logger|1474183271210462000|D:\workspace-excelprocess-final\ExcelProcessor\Logger.py
 lipid|1480405846134725000|D:\workspace-excelprocess-final\ExcelProcessor\lipid.py
-util|1474184225911258000|D:\workspace-excelprocess-final\ExcelProcessor\util.py
+util|1484111508579363000|D:\workspace-excelprocess-final\ExcelProcessor\util.py
 LipidProcessorGUI|1482894247239166000|D:\workspace-excelprocess-final\ExcelProcessor\LipidProcessorGUI.py
-Test|1484103551986652000|D:\workspace-excelprocess-final\ExcelProcessor\Test.py
+Test|1484201627010857000|D:\workspace-excelprocess-final\ExcelProcessor\Test.py
 Quan|1474169046656086000|D:\workspace-excelprocess-final\ExcelProcessor\Quan.py
 rwImage|1482826574283598000|D:\workspace-excelprocess-final\ExcelProcessor\rwImage.py
 ScreenProcessorGUI|1481874439216786000|D:\workspace-excelprocess-final\ExcelProcessor\ScreenProcessorGUI.py
@@ -37,12 +37,13 @@ QuanProcessorGUI|1481874439192774000|D:\workspace-excelprocess-final\ExcelProces
 10=QuanProcessorGUI
 -- END DICTIONARY
 -- START TREE 1
-109
+111
 a|1|a!11@
 add|2|addValueToDict!10@adductTitle!19@
 all|1|allc!27@
 are|0|
 ave|3|average!11@average!34@average!26@
+avg|1|avg!11@
 b|1|b!11@
 bas|1|baseName!43@
 c2a|0|
@@ -139,6 +140,7 @@ run|4|run_screen_processor!90@runGetTimeTest!74@runLoggerTest!74@run_screen_proc
 sav|0|
 scr|2|ScreenFrame!89@ScreenFrame!97@
 she|0|
+sma|1|smallerValues!11@
 spl|4|splitMiddlerStr!26@splitLipidionName!26@splitLipidionName!34@splitMiddlerStr!34@
 str|1|str1!11@
 t4|1|t4!11@

@@ -404,22 +404,32 @@ def reCalUnMergeVals(vldLipidInfo, compndName, newAvg, unMergeVals):
     biggerValues = []
     
     for v in unMergeVals:
-        if(v < newAvg):
+        if(v < (newAvg - topRTRange)):
             smallerValues.append(v)
-        elif(v > newAvg):
+        elif(v > (newAvg + topRTRange)):
             biggerValues.append(v) 
 
-    logger.info("smallerValues = " + str(smallerValues))
-    logger.info("biggerValues = " + str(biggerValues))
+
+   
+    
+    
+    #logger.info("smallerValues = " + str(smallerValues))
+    #logger.info("biggerValues = " + str(biggerValues))
     smallerAvg = 0.0    
     if(len(smallerValues) >= 1):
         smallerAvg = sum(smallerValues) / len(smallerValues)
     
-    logger.info("smallerAvg = " + str(smallerAvg))
+    #logger.info("smallerAvg = " + str(smallerAvg))
     biggerAvg = 0.0
     if(len(biggerValues) >= 1):
         biggerAvg = sum(biggerValues) / len(biggerValues)
-    logger.info("biggerAvg = " + str(biggerAvg))    
+    #logger.info("biggerAvg = " + str(biggerAvg))    
+    
+   
+    
+    
+    
+    
     smallerMergeVals = []
     smallerUnMergeVals = []
     for v in smallerValues:
@@ -429,8 +439,8 @@ def reCalUnMergeVals(vldLipidInfo, compndName, newAvg, unMergeVals):
         else:
             smallerUnMergeVals.append(v)
     
-    logger.info("smallerMergeVals = " + str(smallerMergeVals))
-    logger.info("smallerUnMergeVals = " + str(smallerUnMergeVals))
+    #logger.info("smallerMergeVals = " + str(smallerMergeVals))
+    #logger.info("smallerUnMergeVals = " + str(smallerUnMergeVals))
     
     biggerMergeVals = []
     biggerUnMergeVals = []
@@ -441,28 +451,52 @@ def reCalUnMergeVals(vldLipidInfo, compndName, newAvg, unMergeVals):
         else:
             biggerUnMergeVals.append(v)
             
-    logger.info("biggerMergeVals = " + str(biggerMergeVals))
-    logger.info("biggerUnMergeVals = " + str(biggerUnMergeVals))
+    #logger.info("biggerMergeVals = " + str(biggerMergeVals))
+    #logger.info("biggerUnMergeVals = " + str(biggerUnMergeVals))
     newSmallerAvg = 0.0
     if(len(smallerMergeVals) > 1):
         newSmallerAvg = sum(smallerMergeVals) / len(smallerMergeVals)
         item = (compndName, newSmallerAvg)
         vldLipidInfo.append(item)
     
-    logger.info("newSmallerAvg = " + str(newSmallerAvg))
+    #logger.info("newSmallerAvg = " + str(newSmallerAvg))
     newBiggerAvg = 0.0
     if(len(biggerMergeVals) > 1):
         newBiggerAvg = sum(biggerMergeVals) / len(biggerMergeVals)
         item = (compndName, newBiggerAvg)
         vldLipidInfo.append(item)
         
-    logger.info("newBiggerAvg = " + str(newBiggerAvg))
+    #logger.info("newBiggerAvg = " + str(newBiggerAvg))
     
     for v in smallerUnMergeVals:
         vldLipidInfo.append((compndName, v))
     
     for v in biggerUnMergeVals:
         vldLipidInfo.append((compndName, v))
+        
+        
+    
+    ###################################
+    
+#     if(compndName == 'PC(38:5)+H'):
+#         logger.info("==========================")
+#         logger.info("unMergeVals = " + str(unMergeVals))
+#         logger.info("newAvg = " + str(newAvg))
+#         logger.info("smallerValues = " + str(smallerValues))
+#         logger.info("biggerValues = " + str(biggerValues))
+#         logger.info("smallerAvg = " + str(smallerAvg))
+#         logger.info("biggerAvg = " + str(biggerAvg))
+#         logger.info("newSmallerAvg = " + str(newSmallerAvg))
+#         logger.info("newBiggerAvg = " + str(newBiggerAvg))
+#         logger.info("smallerMergeValues = " + str(smallerMergeVals))
+#         logger.info("smallerUnMergeValues = " + str(smallerUnMergeVals))
+#         logger.info("biggerMergeValues = " + str(biggerMergeVals))
+#         logger.info("biggerUnMergeValues = " + str(biggerUnMergeVals))
+#         logger.info("=========================")
+#         exit()
+#     
+    
+    ###################################
 #提取符合条件2.1的(化合物,toprt)，同时将该化合物信息从候选的lipidInfo中剔除
 def p2dot1(f2c, c2TopRTAvg, c2TopRT):
     
@@ -494,6 +528,7 @@ def p2dot1(f2c, c2TopRTAvg, c2TopRT):
                 else:
                     unMergeValues.append(topRT)
             
+            newAvg = lipidAvg
             if(len(mergeValues) >= 1):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((n, newAvg))
@@ -544,7 +579,7 @@ def p2dot1_ex(f2c, c2TopRTAvg, c2TopRT):
                 else:
                     unMergeValues.append(topRT)
             
-            newAvg = 0.0;
+            newAvg = lipidAvg;
             if(len(mergeValues) >= 1):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((n, newAvg))
@@ -666,6 +701,7 @@ def p2dot2(f2c, c2TopRT):
                 else:
                     unMergeValues.append(topRT)
             
+            newAvg = lipidAvg
             if(len(mergeValues) >= 1):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((newLipidName, newAvg))
@@ -785,16 +821,27 @@ def p2dot3(f2c, c2TopRT):
             for topRT in topRTs:
                 diff = math.fabs(topRT - lipidAvg)
                 
+                if(newLipidName == 'PC(34:4)+H'):
+                    logger.info("diff = " + str(diff) + ", topRT = " + str(topRT) + " , lipidAvg = " + str(lipidAvg))
+                
                 if(diff <= topRTRange):
                     mergeValues.append(topRT)
                 else:
                     unMergeValues.append(topRT)
-            
+            newAvg = lipidAvg
             if(len(mergeValues) >= 1):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((newLipidName, newAvg))
             
-            
+#             if(newLipidName == 'PC(38:5)+H'):
+#                 logger.info("*******************************")
+#                 logger.info("lipidAvg = " + str(lipidAvg))
+#                 logger.info("topRTs = " + str(topRTs))
+#                 logger.info("mergeValues = " + str(mergeValues))
+#                 logger.info("unmergeValues = " + str(unMergeValues))
+#                 logger.info("newAvg = " + str(newAvg))
+#                 
+#                 logger.info("*******************************")
             reCalUnMergeVals(vldLipidInfo, newLipidName, newAvg, unMergeValues)
             #for value in unMergeValues:
             #    vldLipidInfo.append((newLipidName, value))
@@ -921,6 +968,7 @@ def p2dot4a(f2c, c2TopRTAvg, c2TopRT, c2Grade):
                 else:
                     unMergeValues.append(topRT)
             
+            newAvg = lipidAvg
             if(len(mergeValues) >= 1):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((n, newAvg))
@@ -1004,6 +1052,7 @@ def p2dot4b(f2c, c2TopRTAvg, c2TopRT, c2Grade):
                 else:
                     unMergeValues.append(topRT)
             
+            newAvg = lipidAvg
             if(len(mergeValues) >= 1):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((newLipidName, newAvg))
@@ -1117,6 +1166,7 @@ def p2dot4c(f2c, c2TopRTAvg, c2TopRT, c2Grade):
                     unMergeValues.append(topRT)
             #把合并前后的名字都组合起来
             newFullName = genFullName(newLipidName, alias[newLipidName])
+            newAvg = lipidAvg
             if(len(mergeValues) >= 1):
                 newAvg = sum(mergeValues) / len(mergeValues)
                 vldLipidInfo.append((newFullName, newAvg))
@@ -1940,6 +1990,8 @@ if __name__ == '__main__':
     
     #开始向第一个worksheet写数据
     cnt = 0
+    #当设置某个化合物在对应样品文件中的area值时，如果已经将该topRT值归为某个平均值范围了，则设置一个标记，对于其它的平均值，其area值全部设为"null"
+    topRTFlag = {}
     for item in finalLipidInfo:
         lipidName = item[0]
         lineData1 = []
@@ -2011,8 +2063,10 @@ if __name__ == '__main__':
             topRTInCurrFileFinal = float(topRTInCurrFile[0])
             
             diff = math.fabs(float(currTopRT) - topRTInCurrFileFinal)
-            if(diff > topRTRange):
+            if(diff > topRTRange or topRTFlag.has_key(lipidName)):
                 area = "null"
+            else:
+                topRTFlag[lipidName] = True
                          
             
             
@@ -2062,6 +2116,7 @@ if __name__ == '__main__':
     saveOutputDataBook(wordbook=newDataBook, output="lipid.xlsx")
     logger.info("End to write line data to output file")
     
+    topRTFlag.clear()
     
     logger.info("c2Areas = " + str(c2Areas))
     
