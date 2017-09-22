@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;ExcelProcessor/lipid-data-5lines.txt&apos; to &apos;lipid-data-4lines.txt&apos;" description="Rename resource &apos;lipid-data-5lines.txt&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="lipid-data-5lines.txt" name="lipid-data-4lines.txt" stamp="1506047745461" updateReferences="true"/>
+</session>
