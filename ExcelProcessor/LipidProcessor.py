@@ -88,6 +88,50 @@ def loadTextFile(fileName):
         
     return dataDict
 
+def loadThresholdFile(fileName):
+    """
+    Load threshold text file to a dict, the key of dict is the lipidIon, value is the threshold values
+    """
+    lines = readTextFile(fileName)
+    headerLine = []
+    if(len(lines) > 0):
+        headerLine = lines[0].split('\t')
+    
+    logger.info("header number: {0}, headers: {1}".format(len(headerLine), headerLine))
+    headers = []
+    dataDict = {}
+    for header in headerLine:
+        headers.append(header)
+        dataDict[header] = {}
+    
+    """
+    Organize each line of file in lines to a list of list content, 
+    """
+    content = []
+    for item in lines:
+        item = item.split('\t')
+        """
+        Padding empty items to each element in content so that length of items in content is equal to number of headers
+        The reason we need to do this is because we need to transpose the content in the following part 
+        """
+        itemLen = len(item)
+        headerNum = len(headerLine)
+        if(itemLen < headerNum):
+            for i in xrange(0, headerNum - itemLen):
+                item.append('0')
+        content.append(item)
+
+    thresholdDict = {}
+    for i in xrange(1, len(content)):
+        item = content[i]
+        key = item[0]
+        values = item[1:]
+        thresholdValues = [float(v) for v in values]
+        thresholdDict[key] = thresholdValues
+
+    return thresholdDict
+
+
 def createExcelFile():
     wb = Workbook()    
     wb.remove_sheet(wb.get_sheet_by_name("Sheet"))
@@ -183,61 +227,6 @@ def makeColumnDataSubstract(dataList1, dataList2, columnName):
 
     return substractResult
         
-def loadDataFromExcelFile(fileName):
-    logger.info("Start loading data: " + fileName)
-    
-    wholeWorkBook = {}
-    inputDataDict = load_workbook(fileName)
-    #print "end load data %s" % time.clock()
-    logger.info("Finish loading data: " + fileName)
-    
-    sheetNames = inputDataDict.get_sheet_names()
-    #print sheetNames
-    sheetNames.sort()   
-    for currentSheetName in sheetNames:        
-        logger.info("Start to load sheet data: " + currentSheetName)
-        sheetData = inputDataDict.get_sheet_by_name(currentSheetName)
-        rows = sheetData.rows;
-        columns = sheetData.columns;
-        rowsNum = len(rows)
-        columsNum = len(columns)
-
-        cnt = 0
-        sheetRowTitleValue = []
-        sheetColValue = []       
-        #print "Data in ", currentSheetName, ":\n"
-        for row in rows:
-            for colValue in row:   
-                             
-                if(cnt < columsNum):
-                    sheetRowTitleValue.append(colValue.value)
-                else:
-                    sheetColValue.append(colValue.value)
-                    
-                cnt = cnt + 1
-        
-        wholeColumData = []
-        for i in range(columsNum):
-            columnData = []
-            for j in range(rowsNum - 1):
-                index = j * columsNum + i;
-                #print index
-                columnData.append(sheetColValue[index])
-            wholeColumData.append(columnData)
-               
-        
-        #print wholeColumData
-        
-        sheetDataFinal = {}
-        for i in range(columsNum):
-            sheetDataFinal[sheetRowTitleValue[i]] = wholeColumData[i]
-            
-        #print sheetDataFinal
-        
-        wholeWorkBook[currentSheetName] = sheetDataFinal
-        
-    return wholeWorkBook    
-
 def isRowValid(row, thresholdDict):
     return True
 if __name__ == "__main__":
@@ -316,7 +305,7 @@ if __name__ == "__main__":
     
     
     finalDataList = [newDataList[0]]
-    thresholdDict = {}
+    thresholdDict = loadThresholdFile("condition.txt") 
     for i in xrange(1, len(newDataList)):
         row = newDataList[i]
         isValid = isRowValid(row, thresholdDict)
